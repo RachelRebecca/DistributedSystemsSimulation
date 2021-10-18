@@ -68,17 +68,7 @@ public class Client
 
             //for (Thread t: thread1){t.start();}
 
-            for (Thread t: thread1)
-            {
-                try
-                {
-                    t.join();
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            joinThreadsInPool(thread1);
 
             for (String fullID : unreceivedStringIds)
             {
@@ -86,17 +76,7 @@ public class Client
                         unfinishedStringIds, unfinishedList_LOCK));
             }
 
-            for (Thread t: thread2)
-            {
-                try
-                {
-                    t.join();
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            joinThreadsInPool(thread2);
 
             for (String fullID : unfinishedStringIds)
             {
@@ -104,17 +84,7 @@ public class Client
             }
 
             //THIS CAN BE A METHOD!
-            for (Thread t: thread3)
-            {
-                try
-                {
-                    t.join();
-                }
-                catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                }
-            }
+            joinThreadsInPool(thread3);
 
         }
         catch (Exception e)
@@ -140,5 +110,24 @@ public class Client
             isInteger = false;
         }
         return isInteger;
+    }
+
+    /**
+     * Join all threads in an ArrayList of threads
+     * @param threadPool ArrayList of threads to loop through and try to join
+     */
+    private static void joinThreadsInPool(ArrayList<Thread> threadPool)
+    {
+        for (Thread t : threadPool)
+        {
+            try
+            {
+                t.join();
+            }
+            catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
 }
