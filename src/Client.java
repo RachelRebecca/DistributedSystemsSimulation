@@ -9,16 +9,7 @@ import java.util.ArrayList;
 public class Client
 {
     private static final String clientLetter = "C";
-    private static ArrayList<Thread> sendingThreads;
-    private static ArrayList<Thread> receivingThreads;
-    private static ArrayList<String> unsentStringIds;
-    private static Object unsentList_LOCK;
-    private static ArrayList<String> unreceivedStringIds;
-    private static Object unreceivedList_LOCK;
-    private static ArrayList<String> unfinishedStringIds;
-    private static Object unfinishedList_LOCK;
-    private static int id;
-    private static Object socket_LOCK;
+    private static int id = 1;
 
     public static void main(String[] args)
     {
@@ -31,6 +22,15 @@ public class Client
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
 
+        ArrayList<Thread> sendingThreads = new ArrayList<>();
+        ArrayList<Thread> receivingThreads = new ArrayList<>();
+        ArrayList<String> unsentStringIds = new ArrayList<>();
+        Object unsentList_LOCK = new Object();
+        ArrayList<String> unreceivedStringIds = new ArrayList<>();
+        Object unreceivedList_LOCK = new Object();
+        ArrayList<String> unfinishedStringIds = new ArrayList<>();
+        Object unfinishedList_LOCK = new Object();
+        Object socket_LOCK = new Object();
 
         try
                 (
@@ -48,8 +48,10 @@ public class Client
             //arbitrarily making 3 of each kind of thread
             for (int i=0; i < 3; i++)
             {
-                sendingThreads.add(new ClientSendingThread());
-                receivingThreads.add(new ClientReceivingThread());
+                sendingThreads.add(new ClientSendingThread(clientSocket, unsentStringIds, unsentList_LOCK,
+                        unreceivedStringIds, unreceivedList_LOCK));
+                receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedStringIds, unreceivedList_LOCK,
+                        unfinishedStringIds, unfinishedList_LOCK));
             }
 
             for (Thread sThread: sendingThreads)
