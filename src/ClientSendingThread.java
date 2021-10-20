@@ -1,2 +1,4 @@
-public class ClientSendingThread {
+public class ClientSendingThread extends Thread
+{
+
 }
