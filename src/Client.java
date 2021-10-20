@@ -72,7 +72,7 @@ public class Client
                         && !jobType.equalsIgnoreCase("B")
                         && !jobType.equals("0"))
                 {
-                    System.out.println ("Please enter job type A or B or exit by entering 0");
+                    System.out.println ("User input not accepted: please enter job type A or B or exit by entering 0");
                     jobType = stdIn.readLine();
                 }
 
