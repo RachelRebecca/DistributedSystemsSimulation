@@ -1,8 +1,5 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -10,9 +7,9 @@ public class ClientReceivingThread extends Thread
 {
     private Socket clientSocket;
     private ArrayList<String> unreceivedList;
-    private Object unreceived_LOCK;
+    private final Object unreceived_LOCK;
     private ArrayList<String> unfinishedList;
-    private Object unfinished_LOCK;
+    private final Object unfinished_LOCK;
 
     public ClientReceivingThread(Socket clientSocket, ArrayList<String> unreceivedList, Object unreceived_LOCK,
                                  ArrayList<String> unfinishedList, Object unfinished_LOCK)
@@ -34,20 +31,35 @@ public class ClientReceivingThread extends Thread
         {
             String serverMessage;
             String jobTypeAndID;
+            String jobClientTypeAndID;
             while ((serverMessage = responseReader.readLine()) != null)
             {
-                jobTypeAndID = serverMessage.substring(1, serverMessage.length() - 2);
+                jobTypeAndID = serverMessage.substring(2, serverMessage.length() - 3);
+                jobClientTypeAndID = serverMessage.substring(0, serverMessage.length() - 3);
                 // check if received or completed
                 if (messageIsReceived(serverMessage))
                 {
                     // move from unreceived to unfinished - synchronize (need to check what)
+                    synchronized (unreceived_LOCK)
+                    {
+                        unreceivedList.remove(jobClientTypeAndID);
+                    }
+
+                    synchronized (unfinished_LOCK)
+                    {
+                        unfinishedList.add(jobClientTypeAndID);
+                    }
 
                     // output message
                     System.out.println("Job " + jobTypeAndID + " was received.");
                 }
-                else    // maybe add an if (messageIsCompleted)
+                else    // todo: maybe add an if (messageIsCompleted)
                 {
                     // remove from unfinished - synchronize (maybe)
+                    synchronized (unfinished_LOCK)
+                    {
+                        unfinishedList.remove(jobClientTypeAndID);
+                    }
 
                     // output message
                     System.out.println("Job " + jobTypeAndID + " was finished.");
@@ -63,8 +75,6 @@ public class ClientReceivingThread extends Thread
     private boolean messageIsReceived(String serverMessage)
     {
         // if final char is "2" it's from a message being received
-        char finalCharacter = serverMessage.charAt(serverMessage.length() - 1);
-        int finalInteger = Character.getNumericValue(finalCharacter);
-        return finalInteger == 2;
+        return Character.getNumericValue(serverMessage.charAt(serverMessage.length() - 1)) == 2;
     }
 }
