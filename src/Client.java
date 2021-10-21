@@ -1,9 +1,6 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 public class Client
@@ -30,16 +27,10 @@ public class Client
         Object unreceivedList_LOCK = new Object();
         ArrayList<String> unfinishedStringIds = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
-        Object socket_LOCK = new Object();
 
         try
                 (
                         Socket clientSocket = new Socket(hostName, portNumber);
-                        PrintWriter requestWriter = // stream to write text requests to server
-                            new PrintWriter(clientSocket.getOutputStream(), true);
-                        BufferedReader responseReader = // stream to read text response from server
-                            new BufferedReader(
-                                 new InputStreamReader(clientSocket.getInputStream()));
                         BufferedReader stdIn = // standard input stream to get user's requests
                             new BufferedReader(
                                  new InputStreamReader(System.in))
@@ -64,6 +55,7 @@ public class Client
                 rThread.start();
             }
 
+            label:
             while (true)
             {
                 System.out.println ("Please enter job type A or B or exit by entering 0");
@@ -76,19 +68,24 @@ public class Client
                     jobType = stdIn.readLine();
                 }
 
-                if (jobType.equals("0"))
+                switch (jobType)
                 {
-                    break;
-                }
-                else if (jobType.equals("A") || jobType.equals("a"))
-                {
-                    String fullID = clientLetter + ".A." + id;
-                    unsentStringIds.add(fullID);
-                }
-                else if (jobType.equals("B") || jobType.equals("b"))
-                {
-                    String fullID = clientLetter + ".B." + id;
-                    unsentStringIds.add(fullID);
+                    case "0":
+                        break label;
+                    case "A":
+                    case "a":
+                    {
+                        String fullID = clientLetter + ".A." + id;
+                        unsentStringIds.add(fullID);
+                        break;
+                    }
+                    case "B":
+                    case "b":
+                    {
+                        String fullID = clientLetter + ".B." + id;
+                        unsentStringIds.add(fullID);
+                        break;
+                    }
                 }
                 id++;
             }
