@@ -26,8 +26,8 @@ public class ClientReceivingThread extends Thread
     {
         try (// stream to read text response from server
              BufferedReader responseReader = new BufferedReader(
-                     new InputStreamReader(clientSocket.getInputStream())
-             ))
+                     new InputStreamReader(clientSocket.getInputStream()))
+            )
         {
             String serverMessage;
             String jobTypeAndID;
@@ -68,7 +68,7 @@ public class ClientReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            System.out.println(e.getMessage());
         }
     }
 

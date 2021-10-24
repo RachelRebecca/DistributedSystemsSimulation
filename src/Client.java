@@ -98,6 +98,8 @@ public class Client
             {
                 rThread.join();
             }
+            System.out.println("Exiting. Thank you for your participation.");
+            System.exit(0);
         }
         catch (Exception e)
         {
