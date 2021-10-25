@@ -1,15 +1,16 @@
-public class Job {
+public class Job
+{
     private int client;
     private JobTypes type;
-    private int Id;
+    private int id;
     private JobStatuses status;
 
-    public Job (int client, JobTypes type, int Id, JobStatuses status)
+    public Job (int clientNumber, JobTypes jobType, int Id, JobStatuses jobStatus)
     {
-        this.client = client;
-        this.type = type;
-        this.Id = Id;
-        this.status = status;
+        client = clientNumber;
+        type = jobType;
+        id = Id;
+        status = jobStatus;
     }
 
     public int getClient()
@@ -24,7 +25,7 @@ public class Job {
 
     public int getId()
     {
-        return Id;
+        return id;
     }
 
     public JobStatuses getStatus()
@@ -32,23 +33,28 @@ public class Job {
         return status;
     }
 
-    public void setClient(int client)
+    public void setClient(int clientNumber)
     {
-        this.client = client;
+        client = clientNumber;
     }
 
-    public void setType(JobTypes type)
+    public void setType(JobTypes jobType)
     {
-        this.type = type;
+        type = jobType;
     }
 
-    public void setId(int id)
+    public void setId(int Id)
     {
-        Id = id;
+        id = Id;
     }
 
-    public void setStatus(JobStatuses status)
+    public void setStatus(JobStatuses jobStatus)
     {
-        this.status = status;
+        status = jobStatus;
+    }
+
+    public void incrementId()
+    {
+        this.id++;
     }
 }

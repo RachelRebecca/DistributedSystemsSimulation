@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Client
 {
-    private static final String clientLetter = "C";
+    //private static final String clientLetter = "C";
     private static int id = 1;
 
     public static void main(String[] args)
@@ -21,11 +21,14 @@ public class Client
 
         ArrayList<Thread> sendingThreads = new ArrayList<>();
         ArrayList<Thread> receivingThreads = new ArrayList<>();
-        ArrayList<String> unsentStringIds = new ArrayList<>();
+        //ArrayList<String> unsentStringIds = new ArrayList<>();
+        ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
-        ArrayList<String> unreceivedStringIds = new ArrayList<>();
+        //ArrayList<String> unreceivedStringIds = new ArrayList<>();
+        ArrayList<Job> unreceivedList = new ArrayList<>();
         Object unreceivedList_LOCK = new Object();
-        ArrayList<String> unfinishedStringIds = new ArrayList<>();
+        //ArrayList<String> unfinishedStringIds = new ArrayList<>();
+        ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
 
         try
@@ -39,10 +42,15 @@ public class Client
             //arbitrarily making 3 of each kind of thread
             for (int i=0; i < 3; i++)
             {
-                sendingThreads.add(new ClientSendingThread(clientSocket, unsentStringIds, unsentList_LOCK,
-                        unreceivedStringIds, unreceivedList_LOCK));
-                receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedStringIds, unreceivedList_LOCK,
-                        unfinishedStringIds, unfinishedList_LOCK));
+                //sendingThreads.add(new ClientSendingThread(clientSocket, unsentStringIds, unsentList_LOCK,
+                 //       unreceivedStringIds, unreceivedList_LOCK));
+                //receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedStringIds, unreceivedList_LOCK,
+                  //      unfinishedStringIds, unfinishedList_LOCK));
+                sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
+                      unreceivedList, unreceivedList_LOCK));
+                receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedList, unreceivedList_LOCK,
+                      unfinishedList, unfinishedList_LOCK));
+
             }
 
             for (Thread sThread: sendingThreads)
@@ -75,15 +83,19 @@ public class Client
                     case "A":
                     case "a":
                     {
-                        String fullID = clientLetter + ".A." + id;
-                        unsentStringIds.add(fullID);
+                        Job job = new Job(1, JobTypes.A, id, JobStatuses.UNSENT);
+                        unsentList.add(job);
+                        //String fullID = clientLetter + ".A." + id;
+                        //unsentStringIds.add(fullID);
                         break;
                     }
                     case "B":
                     case "b":
                     {
-                        String fullID = clientLetter + ".B." + id;
-                        unsentStringIds.add(fullID);
+                        Job job = new Job(1, JobTypes.B, id, JobStatuses.UNSENT);
+                        unsentList.add(job);
+                        //String fullID = clientLetter + ".B." + id;
+                        //unsentStringIds.add(fullID);
                         break;
                     }
                 }

@@ -1,5 +1,6 @@
-public enum JobTypes {
+public enum JobTypes
+{
     A,
     B,
-    NULL;
+    NULL
 }
