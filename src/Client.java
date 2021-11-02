@@ -83,7 +83,7 @@ public class Client
                     case "A":
                     case "a":
                     {
-                        Job job = new Job(1, JobTypes.A, id, JobStatuses.UNSENT);
+                        Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
                         //String fullID = clientLetter + ".A." + id;
                         //unsentStringIds.add(fullID);
@@ -92,7 +92,7 @@ public class Client
                     case "B":
                     case "b":
                     {
-                        Job job = new Job(1, JobTypes.B, id, JobStatuses.UNSENT);
+                        Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
                         //String fullID = clientLetter + ".B." + id;
                         //unsentStringIds.add(fullID);

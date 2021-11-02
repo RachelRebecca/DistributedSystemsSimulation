@@ -5,13 +5,13 @@ import java.util.ArrayList;
 public class ClientSendingThread extends Thread
 {
     private Socket clientSocket;
-    private  ArrayList<String> unsentList = new ArrayList<>();
+    private  ArrayList<Job> unsentList = new ArrayList<>();
     private final Object unsent_LOCK;
-    private ArrayList<String> unreceivedList;
+    private ArrayList<Job> unreceivedList;
     private final Object unreceived_LOCK;
 
-    public ClientSendingThread(Socket clientSocket, ArrayList<String> unsentList, Object unsent_LOCK,
-                               ArrayList<String> unreceivedList, Object unreceived_LOCK) {
+    public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,
+                               ArrayList<Job> unreceivedList, Object unreceived_LOCK) {
         this.clientSocket = clientSocket;
         this.unreceivedList = unsentList;
         this.unsent_LOCK = unsent_LOCK;
@@ -30,7 +30,7 @@ public class ClientSendingThread extends Thread
 
             while (moreJobsToSend)
             {
-                String currJob = "";
+                Job currJob = null;
                 synchronized (unsent_LOCK)
                 {
                     if (unsentList.size() > 0)
@@ -40,7 +40,7 @@ public class ClientSendingThread extends Thread
                     }
                 }
                 //send to master
-                requestWriter.println(currJob);
+                requestWriter.println(currJob); //is this guy just going to keep sending, and will we have a NullPointer?
 
                 synchronized (unreceived_LOCK)
                 {
