@@ -102,13 +102,20 @@ public class Client
                 id++;
             }
 
-            for (Thread sThread: sendingThreads)
+            try
             {
-                sThread.join();
+                for (Thread sThread : sendingThreads)
+                {
+                    sThread.join();
+                }
+                for (Thread rThread : receivingThreads)
+                {
+                    rThread.join();
+                }
             }
-            for (Thread rThread: receivingThreads)
+            catch (Exception e)
             {
-                rThread.join();
+                System.out.println(e.getMessage());
             }
             System.out.println("Exiting. Thank you for your participation.");
             System.exit(0);
