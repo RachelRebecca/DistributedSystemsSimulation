@@ -30,6 +30,7 @@ public class Client
         //ArrayList<String> unfinishedStringIds = new ArrayList<>();
         ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
+        Done done = new Done();
 
         try
                 (
@@ -47,7 +48,7 @@ public class Client
                 //receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedStringIds, unreceivedList_LOCK,
                   //      unfinishedStringIds, unfinishedList_LOCK));
                 sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
-                      unreceivedList, unreceivedList_LOCK));
+                      unreceivedList, unreceivedList_LOCK, done));
                 receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedList, unreceivedList_LOCK,
                       unfinishedList, unfinishedList_LOCK));
 
@@ -101,6 +102,8 @@ public class Client
                 }
                 id++;
             }
+
+            done.setFinished(true);
 
             try
             {
