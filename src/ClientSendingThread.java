@@ -18,7 +18,7 @@ public class ClientSendingThread extends Thread
         this.unsent_LOCK = unsent_LOCK;
         this.unreceivedList = unreceivedList;
         this.unreceived_LOCK = unreceived_LOCK;
-        done = isDone;
+        this.done = isDone;
     }
 
     @Override
@@ -32,16 +32,16 @@ public class ClientSendingThread extends Thread
             while (!done.getIsFinished())
             {
                 Job currJob = null;
-                synchronized (unsent_LOCK)
+                if (unsentList.size() > 0)
                 {
-                    if (unsentList.size() > 0)
+                    synchronized (unsent_LOCK)
                     {
                         currJob = unsentList.get(0);
                         unsentList.remove(0);
                     }
+                    //send to master
+                    requestWriter.println(currJob);
                 }
-                //send to master
-                requestWriter.println(currJob); //is this guy just going to keep sending, and will we have a NullPointer?
 
                 synchronized (unreceived_LOCK)
                 {
