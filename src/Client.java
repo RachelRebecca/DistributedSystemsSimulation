@@ -82,6 +82,7 @@ public class Client
                     {
                         Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
+                        System.out.println("Created new A job");
                         break;
                     }
                     case "B":
@@ -89,6 +90,7 @@ public class Client
                     {
                         Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
+                        System.out.println("Created new B job");
                         break;
                     }
                 }
