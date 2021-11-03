@@ -88,14 +88,7 @@ public class Client
                     case "a":
                     {
                         Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
-                        synchronized (unsentList_LOCK)
-                        {
-                            unsentList.add(job);
-                            for (Thread sThread : sendingThreads)
-                            {
-                                sThread.notify();
-                            }
-                        }
+                        unsentList.add(job);
                         System.out.println("Created new A job: " + job.getId());
                         break;
                     }
