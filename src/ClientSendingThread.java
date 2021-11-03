@@ -1,6 +1,5 @@
-import java.io.ObjectOutputStream;
-import java.io.PrintWriter;
-import java.net.Socket;
+import java.io.*;
+import java.net.*;
 import java.util.ArrayList;
 
 public class ClientSendingThread extends Thread
@@ -51,13 +50,18 @@ public class ClientSendingThread extends Thread
                         unreceivedList.add(currJob);
                     }
                 }
+
+                if (done.getIsFinished())
+                {
+                    System.out.println("Done is finished.");
+                    done.setFinished(true);
+                }
             }
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
+        System.out.println("exiting thread.");
     }
-
-
 }

@@ -10,6 +10,13 @@ public class Client
     // port = 30121
 
     private static int id = 1;
+    private static ArrayList<Job> unsentList;
+    private static Object unsentList_LOCK;
+    private static ArrayList<Job> unreceivedList;
+    private static Object unreceivedList_LOCK;
+    private static ArrayList<Job> unfinishedList;
+    private static Object unfinishedList_LOCK;
+
 
     public static void main(String[] args)
     {
@@ -24,12 +31,12 @@ public class Client
 
         ArrayList<Thread> sendingThreads = new ArrayList<>();
         ArrayList<Thread> receivingThreads = new ArrayList<>();
-        ArrayList<Job> unsentList = new ArrayList<>();
-        Object unsentList_LOCK = new Object();
-        ArrayList<Job> unreceivedList = new ArrayList<>();
-        Object unreceivedList_LOCK = new Object();
-        ArrayList<Job> unfinishedList = new ArrayList<>();
-        Object unfinishedList_LOCK = new Object();
+        unsentList = new ArrayList<>();
+        unsentList_LOCK = new Object();
+        unreceivedList = new ArrayList<>();
+        unreceivedList_LOCK = new Object();
+        unfinishedList = new ArrayList<>();
+        unfinishedList_LOCK = new Object();
         Done done = new Done();
 
         try

@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-public class Client
+public class ClientClass
 {
     private static String clientLetter;
     private static ArrayList<Thread> thread1;
