@@ -24,13 +24,10 @@ public class Client
 
         ArrayList<Thread> sendingThreads = new ArrayList<>();
         ArrayList<Thread> receivingThreads = new ArrayList<>();
-        //ArrayList<String> unsentStringIds = new ArrayList<>();
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
-        //ArrayList<String> unreceivedStringIds = new ArrayList<>();
         ArrayList<Job> unreceivedList = new ArrayList<>();
         Object unreceivedList_LOCK = new Object();
-        //ArrayList<String> unfinishedStringIds = new ArrayList<>();
         ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
         Done done = new Done();
@@ -43,13 +40,9 @@ public class Client
                                  new InputStreamReader(System.in))
                 )
         {
-            //arbitrarily making 3 of each kind of thread
-            for (int i=0; i < 3; i++)
+            //(arbitrarily) making 1 (want to ultimately switch to 3) of each kind of thread
+            for (int i=0; i < 1; i++)
             {
-                //sendingThreads.add(new ClientSendingThread(clientSocket, unsentStringIds, unsentList_LOCK,
-                 //       unreceivedStringIds, unreceivedList_LOCK));
-                //receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedStringIds, unreceivedList_LOCK,
-                  //      unfinishedStringIds, unfinishedList_LOCK));
                 sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
                       unreceivedList, unreceivedList_LOCK, done));
                 receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedList, unreceivedList_LOCK,
@@ -89,8 +82,6 @@ public class Client
                     {
                         Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
-                        //String fullID = clientLetter + ".A." + id;
-                        //unsentStringIds.add(fullID);
                         break;
                     }
                     case "B":
@@ -98,8 +89,6 @@ public class Client
                     {
                         Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
-                        //String fullID = clientLetter + ".B." + id;
-                        //unsentStringIds.add(fullID);
                         break;
                     }
                 }
