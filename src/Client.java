@@ -5,7 +5,10 @@ import java.util.ArrayList;
 
 public class Client
 {
-    //private static final String clientLetter = "C";
+
+    // IP address = "127.0.0.1"
+    // port = 30121
+
     private static int id = 1;
 
     public static void main(String[] args)
