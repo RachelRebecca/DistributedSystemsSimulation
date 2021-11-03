@@ -32,6 +32,13 @@ public class ClientSendingThread extends Thread
         {
             while (!done.getIsFinished())
             {
+                synchronized (unsent_LOCK)
+                {
+                    while (unsentList.size() == 0)
+                    {
+                        unsent_LOCK.wait();
+                    }
+                }
                 Job currJob;
                 if (unsentList.size() > 0)
                 {
