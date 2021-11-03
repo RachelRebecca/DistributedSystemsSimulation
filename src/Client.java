@@ -89,7 +89,7 @@ public class Client
                     {
                         Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         unsentList.add(job);
-                        System.out.println("Created new A job");
+                        System.out.println("Created new A job: " + job.getId());
                         break;
                     }
                     case "B":
@@ -105,6 +105,7 @@ public class Client
             }
 
             done.setFinished(true);
+            System.out.println("Done has been updated in Client.");
 
             try
             {
