@@ -7,7 +7,7 @@ import java.util.Random;
 
 public class Master
 {
-    public static void main(String[] args) throws Exception
+    public static void main(String[] args)
     {
 
         // Hard code in port number if necessary:
@@ -24,27 +24,29 @@ public class Master
         try
                 (
                         ServerSocket serverSocket = new ServerSocket(portNumber);
-                        Socket clientSocketSending = serverSocket.accept();
-                        Socket clientSocketReceiving = serverSocket.accept();
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocketSending.getOutputStream());
-                        ObjectInputStream objectInputStream = new ObjectInputStream(clientSocketSending.getInputStream())
+                        Socket clientSocket = serverSocket.accept();
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
+                        ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
                 )
         {
-            // get job from client
-            Job clientRequest = (Job) objectInputStream.readObject();
-
-            System.out.println("Got a job: " + clientRequest.getType() + clientRequest.getId());
-
-            // if job is unfinished, send back finished
-            if (clientRequest.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
+            while (true)
             {
-                System.out.println("Sending back job acknowledgement");
-                clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
-                objectOutputStream.writeObject(clientRequest);
-            }
-            else
-            {
-                System.out.println("Something weird happened");
+                // get job from client
+                Job clientRequest = (Job) objectInputStream.readObject();
+
+                System.out.println("Got a job: " + clientRequest.getType() + clientRequest.getId());
+
+                // if job is unfinished, send back finished
+                if (clientRequest.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
+                {
+                    System.out.println("Sending back job acknowledgement");
+                    clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
+                    objectOutputStream.writeObject(clientRequest);
+                }
+                else
+                {
+                    System.out.println("Something weird happened");
+                }
             }
 
         }

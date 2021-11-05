@@ -24,7 +24,6 @@ public class ClientSendingThread extends Thread
     @Override
     public void run()
     {
-        System.out.println("Starting run of sending thread");
         try
                 (ObjectOutputStream requestWriter = // stream to write text requests to server
                      new ObjectOutputStream(clientSocket.getOutputStream())
@@ -33,16 +32,19 @@ public class ClientSendingThread extends Thread
             while (!done.getIsFinished())
             {
                 Job currJob;
-                if (unsentList.size() > 0)
+                int unsentSize;
+                synchronized (unsent_LOCK)
                 {
-                    System.out.println("There is an unsent job: unsent.size is " + unsentList.size());
+                    unsentSize = unsentList.size();
+                }
+                if (unsentSize > 0)
+                {
                     synchronized (unsent_LOCK)
                     {
                         currJob = unsentList.get(0);
                         unsentList.remove(0);
                     }
                     //send to master
-                    System.out.println("Sending to master");
                     requestWriter.writeObject(currJob);
 
                     synchronized (unreceived_LOCK)
@@ -53,7 +55,6 @@ public class ClientSendingThread extends Thread
 
                 if (done.getIsFinished())
                 {
-                    System.out.println("Done is finished.");
                     done.setFinished(true);
                 }
             }

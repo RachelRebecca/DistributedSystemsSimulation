@@ -88,7 +88,10 @@ public class Client
                     case "a":
                     {
                         Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
-                        unsentList.add(job);
+                        synchronized (unsentList_LOCK)
+                        {
+                            unsentList.add(job);
+                        }
                         System.out.println("Created new A job: " + job.getId());
                         break;
                     }
@@ -96,7 +99,10 @@ public class Client
                     case "b":
                     {
                         Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
-                        unsentList.add(job);
+                        synchronized (unsentList_LOCK)
+                        {
+                            unsentList.add(job);
+                        }
                         System.out.println("Created new B job");
                         break;
                     }
