@@ -1,4 +1,6 @@
-public class Job
+import java.io.Serializable;
+
+public class Job implements Serializable
 {
     private int client;
     private JobTypes type;

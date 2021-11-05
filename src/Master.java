@@ -23,10 +23,10 @@ public class Master
 
         try
                 (
-                        ServerSocket serverSocket = new ServerSocket(Integer.parseInt(args[0]));
+                        ServerSocket serverSocket = new ServerSocket(portNumber);
                         Socket clientSocketSending = serverSocket.accept();
                         Socket clientSocketReceiving = serverSocket.accept();
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocketReceiving.getOutputStream());
+                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocketSending.getOutputStream());
                         ObjectInputStream objectInputStream = new ObjectInputStream(clientSocketSending.getInputStream())
                 )
         {
