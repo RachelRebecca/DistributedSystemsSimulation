@@ -1,9 +1,6 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 
 public class Master
 {
@@ -41,6 +38,12 @@ public class Master
                 {
                     System.out.println("Sending back job acknowledgement");
                     clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
+                    objectOutputStream.writeObject(clientRequest);
+
+                    Thread.sleep(2000);
+
+                    System.out.println("Sending back job completion");
+                    clientRequest.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
                     objectOutputStream.writeObject(clientRequest);
                 }
                 else
