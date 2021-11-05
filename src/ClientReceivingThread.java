@@ -53,9 +53,6 @@ public class ClientReceivingThread extends Thread
                     {
                         unfinishedList.add(serverMessage);
                     }
-
-                    // output message
-                    System.out.println("Job " + serverMessage.getType() + serverMessage.getId() + " was received.");
                 }
                 else    // todo: maybe add an if (messageIsCompleted)
                 {
@@ -68,6 +65,10 @@ public class ClientReceivingThread extends Thread
                     // output message
                     System.out.println("Job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
                 }
+
+                // output message
+                System.out.println("Job " + serverMessage.getType() + serverMessage.getId() + " was received. " +
+                        "Status: " + serverMessage.getStatus());
             }
         }
         catch (Exception e)
