@@ -1,4 +1,6 @@
-import resources.Done;
+package client;
+
+import resources.*;
 
 import java.io.*;
 import java.net.*;

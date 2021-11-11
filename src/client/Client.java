@@ -1,4 +1,6 @@
-import resources.Done;
+package client;
+
+import resources.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -113,7 +115,7 @@ public class Client
             }
 
             done.setFinished(true);
-            System.out.println("resources.Done has been updated in Client.");
+            System.out.println("resources.Done has been updated in client.Client.");
 
             try
             {

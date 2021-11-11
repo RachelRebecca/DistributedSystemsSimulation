@@ -1,3 +1,7 @@
+package client;
+
+import resources.*;
+
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -63,11 +67,11 @@ public class ClientReceivingThread extends Thread
                     }
 
                     // output message
-                    System.out.println("Job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
+                    System.out.println("resources.Job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
                 }
 
                 // output message
-                System.out.println("Job " + serverMessage.getType() + serverMessage.getId() + " was received. " +
+                System.out.println("resources.Job " + serverMessage.getType() + serverMessage.getId() + " was received. " +
                         "Status: " + serverMessage.getStatus());
             }
         }

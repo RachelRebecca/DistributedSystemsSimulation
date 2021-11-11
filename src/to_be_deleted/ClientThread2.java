@@ -11,6 +11,6 @@ public class ClientThread2 extends Thread
     {
         // wait for acknowledgement that job has been received by master - use ClientSocket and socket_LOCK
         System.out.println("Message " + fullID + "has been sent.");
-        unfinishedList.add(fullID); //update for to_be_deleted.Client as well? Use LOCK
+        unfinishedList.add(fullID); //update for to_be_deleted.client.Client as well? Use LOCK
     }
 }

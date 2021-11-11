@@ -1,3 +1,5 @@
+package resources;
+
 public enum JobStatuses
 {
     UNFINISHED_SEND_TO_MASTER, //client to master
