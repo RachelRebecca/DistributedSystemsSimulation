@@ -1,3 +1,5 @@
+import resources.Done;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.Socket;
@@ -111,7 +113,7 @@ public class Client
             }
 
             done.setFinished(true);
-            System.out.println("Done has been updated in Client.");
+            System.out.println("resources.Done has been updated in Client.");
 
             try
             {
