@@ -4,6 +4,5 @@ public enum SlaveTypes
 {
     A,
     B,
-    NULL,
-
+    NULL
 }
