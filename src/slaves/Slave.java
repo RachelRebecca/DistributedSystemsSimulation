@@ -48,8 +48,8 @@ public class Slave
             //can change the 1's later:
             for (int i = 0; i < 1; i++)
             {
-                doJobThreads.add(new DoJobThread(incompleteJobList, incompleteJob_LOCK, completedJobList,
-                        completedJobList_LOCK, done, slaveType));
+                doJobThreads.add(new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
+                        completedJobList_LOCK, slaveType, done));
                 sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done));
                 receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
             }
