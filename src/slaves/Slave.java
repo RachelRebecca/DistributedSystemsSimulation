@@ -24,7 +24,7 @@ public class Slave
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-        SlaveTypes slaveType = null;
+        SlaveTypes slaveType = SlaveTypes.NULL;
         if (args[2].equals(SlaveTypes.A.name()))
         {
             slaveType = SlaveTypes.A;
@@ -43,6 +43,8 @@ public class Slave
         ArrayList<Job> completedJobList = new ArrayList<>();
         Object completedJobList_LOCK = new Object();
         Done done = new Done();
+
+        setABTime(slaveType);
 
 
 
@@ -118,7 +120,7 @@ public class Slave
         return isInteger;
     }
 
-    public void setABTime(SlaveTypes slaveType)
+    private static void setABTime(SlaveTypes slaveType)
     {
         if (slaveType.equals(SlaveTypes.A))
         {
