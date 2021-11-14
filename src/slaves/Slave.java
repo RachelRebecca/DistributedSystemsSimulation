@@ -2,7 +2,6 @@ package slaves;
 
 import resources.*;
 
-import java.io.ObjectInput;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -11,6 +10,9 @@ public class Slave
 
     // IP address = "127.0.0.1"
     // port = 30122
+
+    private static int aTime;
+    private static int bTime;
 
     public static void main(String[] args)
     {
@@ -42,6 +44,8 @@ public class Slave
         Object completedJobList_LOCK = new Object();
         Done done = new Done();
 
+
+
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
 
@@ -49,7 +53,7 @@ public class Slave
             for (int i = 0; i < 1; i++)
             {
                 doJobThreads.add(new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
-                        completedJobList_LOCK, slaveType, done));
+                        completedJobList_LOCK, aTime, bTime, done));
                 sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done));
                 receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
             }
@@ -112,5 +116,19 @@ public class Slave
             isInteger = false;
         }
         return isInteger;
+    }
+
+    public void setABTime(SlaveTypes slaveType)
+    {
+        if (slaveType.equals(SlaveTypes.A))
+        {
+            aTime = 2000;
+            bTime = 10000;
+        }
+        else if (slaveType.equals(SlaveTypes.B))
+        {
+            aTime = 10000;
+            bTime = 2000;
+        }
     }
 }
