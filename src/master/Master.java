@@ -21,33 +21,48 @@ public class Master
         }
 
         int portNumber = Integer.parseInt(args[0]);
+        int slavePortNumber = 30122;
 
         try
                 (
                         ServerSocket serverSocket = new ServerSocket(portNumber);
                         Socket clientSocket = serverSocket.accept();
-                        ObjectOutputStream objectOutputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-                        ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
+                        ObjectOutputStream objectOutputStreamClient = new ObjectOutputStream(clientSocket.getOutputStream());
+                        ObjectInputStream objectInputStreamClient = new ObjectInputStream(clientSocket.getInputStream());
+
+                        ServerSocket slaveServerSocket = new ServerSocket(slavePortNumber);
+                        Socket slaveSocket = slaveServerSocket.accept();
+                        ObjectOutputStream objectOutputStreamSlave = new ObjectOutputStream(slaveSocket.getOutputStream());
+                        ObjectInputStream objectInputStreamSlave = new ObjectInputStream(slaveSocket.getInputStream())
+
                 )
         {
             while (true)
             {
                 // get job from client
-                Job clientRequest = (Job) objectInputStream.readObject();
+                Job clientRequest = (Job) objectInputStreamClient.readObject();
+                System.out.println("Got a job from client: " + clientRequest.getType() + clientRequest.getId());
 
-                System.out.println("Got a job: " + clientRequest.getType() + clientRequest.getId());
+                // send ack
+                clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
+                objectOutputStreamClient.writeObject(clientRequest);
+                System.out.println("Sending acknowledgement");
 
-                // if job is unfinished, send back finished
-                if (clientRequest.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
-                {
-                    System.out.println("Sending back job acknowledgement");
-                    clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
-                    objectOutputStream.writeObject(clientRequest);
-                }
-                else
-                {
-                    System.out.println("Something weird happened");
-                }
+                // choose slave
+
+                // send to slave
+                clientRequest.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
+                objectOutputStreamSlave.writeObject(clientRequest);
+                System.out.println("Sending to slave");
+
+                // wait to hear back from slave
+                Job finishedJob = (Job) objectInputStreamSlave.readObject();
+                System.out.println("Got a job from slave: " + finishedJob.getType() + finishedJob.getId());
+
+                // send finished job to client
+                finishedJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
+                objectOutputStreamClient.writeObject(finishedJob);
+                System.out.println("Sending to client");
             }
 
         }

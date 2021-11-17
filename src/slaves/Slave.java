@@ -73,7 +73,8 @@ public class Slave
                 rThread.start();
             }
 
-            while (!done.getIsFinished());
+            Thread.sleep(10000);
+            done.setFinished(true);
 
             try
             {
@@ -92,12 +93,14 @@ public class Slave
             }
             catch (Exception e)
             {
-                System.out.println(e.getMessage());
+                System.out.println("In inner exception");
+//                System.out.println(e.getMessage());
             }
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("In outer exception");
+//            System.out.println(e.getMessage());
         }
     }
 
