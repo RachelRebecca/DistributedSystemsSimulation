@@ -57,7 +57,7 @@ public class Slave
                 receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
             }
 
-            // there is only every one doJob thread, otherwise a slave could do 2 jobs at once
+            // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
                     completedJobList_LOCK, aTime, bTime, done);
 
