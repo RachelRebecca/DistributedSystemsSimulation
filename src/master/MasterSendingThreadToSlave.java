@@ -7,13 +7,13 @@ public class MasterSendingThreadToSlave extends Thread
 
     ServerSocket slaveServerSocket;
     TimeTrackerForSlave timeTrackerForSlaveA;
-    TimeTrackerForSlave getTimeTrackerForSlaveB;
+    TimeTrackerForSlave TimeTrackerForSlaveB;
 
     public MasterSendingThreadToSlave(ServerSocket serverSocket, TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB)
     {
         slaveServerSocket = serverSocket;
         timeTrackerForSlaveA = timeTrackerA;
-        getTimeTrackerForSlaveB = timeTrackerB;
+        TimeTrackerForSlaveB = timeTrackerB;
     }
 
     @Override
