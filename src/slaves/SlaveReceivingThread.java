@@ -22,26 +22,25 @@ public class SlaveReceivingThread extends Thread
     @Override
     public void run()
     {
-        while (!done.getIsFinished())
+        try (ObjectInputStream objectInput = new ObjectInputStream(slaveSocket.getInputStream()))
         {
-            try
-                    (ObjectInputStream objectInput = new ObjectInputStream(slaveSocket.getInputStream()))
+            while (!done.getIsFinished())
             {
                 Job job = (Job) objectInput.readObject();
                 synchronized (incompleteList_LOCK)
                 {
                     incompleteJobs.add(job);
                 }
-            }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
 
-            if (done.getIsFinished())
-            {
-                done.setFinished(true);
+                if (done.getIsFinished())
+                {
+                    done.setFinished(true);
+                }
             }
+        }
+        catch (Exception e)
+        {
+            System.out.println("BUG!" + e.getMessage());
         }
     }
 }

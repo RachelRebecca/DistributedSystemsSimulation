@@ -25,14 +25,12 @@ public class SlaveSendingThread extends Thread
         done = finished;
     }
 
-
     public void run()
     {
-        while (!done.getIsFinished())
+        try (ObjectOutputStream requestWriter = // stream to write text requests to server
+                     new ObjectOutputStream(slaveSocket.getOutputStream()))
         {
-            try (ObjectOutputStream requestWriter = // stream to write text requests to server
-                         new ObjectOutputStream(slaveSocket.getOutputStream())
-            )//which resources??
+            while (!done.getIsFinished())
             {
                 Job myJob;
                 int numDone;
@@ -52,16 +50,19 @@ public class SlaveSendingThread extends Thread
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
                 }
-            } catch (Exception e)
-            {
-                // something
-            }
-            if (done.getIsFinished())
-            {
-                done.setFinished(true);
+
+                if (done.getIsFinished())
+                {
+                    done.setFinished(true);
+                }
+
             }
         }
-
+        catch (Exception e)
+        {
+            System.out.println("Something happened");
+            // something
+        }
 
     }
 

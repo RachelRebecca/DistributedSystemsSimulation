@@ -14,14 +14,14 @@ public class Master
         // Hard code in port number if necessary:
         //args = new String[] { "30121" };
 
-        if (args.length != 1 || !isInteger(args[0]))
+        if (args.length != 2 || !isInteger(args[0]))
         {
-            System.err.println("Usage: java EchoServer <port number>");
+            System.err.println("Usage: java EchoServer <client port number> <slave port number>");
             System.exit(1);
         }
 
         int portNumber = Integer.parseInt(args[0]);
-        int slavePortNumber = 30122;
+        int slavePortNumber = Integer.parseInt(args[1]);
 
         try
                 (
@@ -34,7 +34,6 @@ public class Master
                         Socket slaveSocket = slaveServerSocket.accept();
                         ObjectOutputStream objectOutputStreamSlave = new ObjectOutputStream(slaveSocket.getOutputStream());
                         ObjectInputStream objectInputStreamSlave = new ObjectInputStream(slaveSocket.getInputStream())
-
                 )
         {
             while (true)

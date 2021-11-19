@@ -137,7 +137,7 @@ public class Client
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
