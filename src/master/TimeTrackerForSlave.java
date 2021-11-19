@@ -2,14 +2,14 @@ package master;
 
 import resources.SlaveTypes;
 
-public class TimeLeftForSlave
+public class TimeTrackerForSlave
 {
     private int time;
     private int aTime;
     private int bTime;
     private SlaveTypes slaveType;
 
-    public TimeLeftForSlave(SlaveTypes slaveTypeChar)
+    public TimeTrackerForSlave(SlaveTypes slaveTypeChar)
     {
         slaveType = slaveTypeChar;
         setABTime();

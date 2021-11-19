@@ -56,7 +56,7 @@ public class Master
 
                 // wait to hear back from slave
                 Job finishedJob = (Job) objectInputStreamSlave.readObject();
-                System.out.println("Got a job from slave: " + finishedJob.getType() + finishedJob.getId());
+                System.out.println("Got a job from slave: " + finishedJob.getType() + finishedJob.getId() + finishedJob.getStatus());
 
                 // send finished job to client
                 finishedJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
