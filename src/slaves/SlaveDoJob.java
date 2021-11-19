@@ -34,13 +34,14 @@ public class SlaveDoJob extends Thread
             while (!isDone.getIsFinished())
             {
                 int length;
+                Job myJob;
                 synchronized (jobsToCompleteLock)
                 {
                     length = jobsToComplete.size();
                 }
-                if (length > 1)
+                if (length > 0)
                 {
-                    Job myJob;
+                    System.out.println("doJob: got a job to do!");
                     synchronized (jobsToCompleteLock)
                     {
                         myJob = jobsToComplete.get(0);
@@ -49,10 +50,12 @@ public class SlaveDoJob extends Thread
 
                     if (myJob.getType() == JobTypes.A)
                     {
+                        System.out.println("Doing an a sleep");
                         Thread.sleep(sleepA);
                     }
                     else
                     {
+                        System.out.println("Doing a b sleep");
                         Thread.sleep(sleepB);
                     }
 

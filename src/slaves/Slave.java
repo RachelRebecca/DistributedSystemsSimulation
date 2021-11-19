@@ -73,8 +73,8 @@ public class Slave
                 rThread.start();
             }
 
-            Thread.sleep(10000);
-            done.setFinished(true);
+//            Thread.sleep(10000);
+//            done.setFinished(true);
 
             try
             {
