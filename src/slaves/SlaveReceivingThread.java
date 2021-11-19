@@ -29,6 +29,7 @@ public class SlaveReceivingThread extends Thread
                 Job job = (Job) objectInput.readObject();
                 synchronized (incompleteList_LOCK)
                 {
+                    System.out.println("Adding incomplete job: " + job);
                     incompleteJobs.add(job);
                 }
 

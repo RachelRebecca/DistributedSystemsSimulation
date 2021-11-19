@@ -47,6 +47,7 @@ public class SlaveSendingThread extends Thread
                         completeJobs.remove(0);
 
                     }
+                    System.out.println("REACHED THIS POINT");
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
                 }
