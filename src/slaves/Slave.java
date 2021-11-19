@@ -35,7 +35,6 @@ public class Slave
         }
 
 
-        ArrayList<Thread> doJobThreads = new ArrayList<>();
         ArrayList<Thread> sendingThreads = new ArrayList<>();
         ArrayList<Thread> receivingThreads = new ArrayList<>();
         ArrayList<Job> incompleteJobList = new ArrayList<>();
@@ -54,16 +53,14 @@ public class Slave
             //can change the 1's later:
             for (int i = 0; i < 1; i++)
             {
-                doJobThreads.add(new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
-                        completedJobList_LOCK, aTime, bTime, done));
                 sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done));
                 receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
             }
 
-            for (Thread djThread : doJobThreads)
-            {
-                djThread.start();
-            }
+            // there is only every one doJob thread, otherwise a slave could do 2 jobs at once
+            Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
+                    completedJobList_LOCK, aTime, bTime, done);
+
             for (Thread sThread : sendingThreads)
             {
                 sThread.start();
@@ -73,15 +70,14 @@ public class Slave
                 rThread.start();
             }
 
+            doJobThread.start();
+
 //            Thread.sleep(10000);
 //            done.setFinished(true);
 
             try
             {
-                for (Thread djThread : doJobThreads)
-                {
-                    djThread.join();
-                }
+                doJobThread.join();
                 for (Thread sThread : sendingThreads)
                 {
                     sThread.join();
