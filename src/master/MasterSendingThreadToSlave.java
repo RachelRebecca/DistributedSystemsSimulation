@@ -23,13 +23,23 @@ public class MasterSendingThreadToSlave extends Thread
 
     private void loadBalance(Job newJob)
     {
+        int slaveATime=0;
+        int slaveBTime=0;
 
-        int comparison = (timeTrackerForSlaveA.getTime() + timeTrackerForSlaveA.add(newJob.getType()))
-                            - (timeTrackerForSlaveB.getTime() + timeTrackerForSlaveB.add(newJob.getType()));
+        if (newJob.getType().equals(JobTypes.A))
+        {
+            slaveATime = 2000;
+            slaveBTime = 10000;
+        }
+        else if (newJob.getType().equals(JobTypes.B))
+        {
+            slaveATime = 10000;
+            slaveBTime = 2000;
+        }
 
-        // basically for each slave, add the time currently on the slave plus the time that would be added
-        // by the given job type (which is different for slave A and slave B) and subtract to compare -
-        // for example if job type is A, slaveANewJobTime would be 2000 and slaveBNewJobTime would be 10000)
+        int comparison = (timeTrackerForSlaveA.getTime() + slaveATime
+                            - (timeTrackerForSlaveB.getTime() + slaveBTime));
+
         JobTypes type = newJob.getType();
         if (comparison < 0)
         {
