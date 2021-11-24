@@ -1,33 +1,14 @@
 package master;
 
 import resources.*;
-import java.net.ServerSocket;
 
-public class MasterSendingThreadToSlave extends Thread
+public class LoadBalance
 {
-
-    ServerSocket slaveServerSocket;
-    TimeTrackerForSlave timeTrackerForSlaveA;
-    TimeTrackerForSlave timeTrackerForSlaveB;
-
-    public MasterSendingThreadToSlave(ServerSocket serverSocket, TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB)
-    {
-        slaveServerSocket = serverSocket;
-        timeTrackerForSlaveA = timeTrackerA;
-        timeTrackerForSlaveB = timeTrackerB;
-    }
-
-    @Override
-    public void run()
-    {
-
-    }
-
-    /*
-    private void loadBalance(Job newJob)
+    public static SlaveTypes loadBalance(TimeTrackerForSlave timeTrackerForSlaveA, TimeTrackerForSlave timeTrackerForSlaveB, Job newJob)
     {
         int slaveATime=0;
         int slaveBTime=0;
+        SlaveTypes slaveType = SlaveTypes.NULL;
 
         if (newJob.getType().equals(JobTypes.A))
         {
@@ -41,19 +22,19 @@ public class MasterSendingThreadToSlave extends Thread
         }
 
         int comparison = (timeTrackerForSlaveA.getTime() + slaveATime
-                            - (timeTrackerForSlaveB.getTime() + slaveBTime));
+                - (timeTrackerForSlaveB.getTime() + slaveBTime));
 
         JobTypes type = newJob.getType();
         if (comparison < 0)
         {
             // send to slave A    //how do you send to slave A??
-
+            slaveType = SlaveTypes.A;
             if (newJob.getType().equals(JobTypes.A))
             {
-                timeTrackerForSlaveA.addA();
+                timeTrackerForSlaveA.addA(); // this should be in MasterSendingThreadToSlave
             } else
             {
-                timeTrackerForSlaveA.addB();
+                timeTrackerForSlaveA.addB(); // this should be in MasterSendingThreadToSlave
             }
 
 
@@ -61,16 +42,16 @@ public class MasterSendingThreadToSlave extends Thread
         {
             if (newJob.getType().equals(JobTypes.A))
             {
-                // send to A
+                slaveType = SlaveTypes.A;
                 timeTrackerForSlaveA.addA();
             } else
             {
-                // send to B
+                slaveType = SlaveTypes.B;
                 timeTrackerForSlaveB.addB();
             }
         } else
         {
-            // send to slave B
+            slaveType = SlaveTypes.B;
 
             if (newJob.getType().equals(JobTypes.A))
             {
@@ -81,6 +62,7 @@ public class MasterSendingThreadToSlave extends Thread
             }
         }
 
+        return slaveType;
+
     }
-     */
 }
