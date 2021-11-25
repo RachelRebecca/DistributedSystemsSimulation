@@ -13,34 +13,28 @@ public class Client
     // IP address = "127.0.0.1"
     // port = 30121
 
-    private static int id = 1;
-    private static ArrayList<Job> unsentList;
-    private static Object unsentList_LOCK;
-    private static ArrayList<Job> unreceivedList;
-    private static Object unreceivedList_LOCK;
-    private static ArrayList<Job> unfinishedList;
-    private static Object unfinishedList_LOCK;
-
+    private static int id;
 
     public static void main(String[] args)
     {
-        if (args.length != 2 || !isInteger(args[1]))
+        if (args.length != 3 || !isInteger(args[1]) || !isInteger(args[2]))
         {
-            System.err.println("Usage: java Client <host name> <port number>");
+            System.err.println("Usage: java Client <host name> <port number> <id>");
             System.exit(1);
         }
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
+        id = Integer.parseInt(args[2]);
 
         ArrayList<Thread> sendingThreads = new ArrayList<>();
         ArrayList<Thread> receivingThreads = new ArrayList<>();
-        unsentList = new ArrayList<>();
-        unsentList_LOCK = new Object();
-        unreceivedList = new ArrayList<>();
-        unreceivedList_LOCK = new Object();
-        unfinishedList = new ArrayList<>();
-        unfinishedList_LOCK = new Object();
+        ArrayList<Job> unsentList = new ArrayList<>();
+        Object unsentList_LOCK = new Object();
+        ArrayList<Job> unreceivedList = new ArrayList<>();
+        Object unreceivedList_LOCK = new Object();
+        ArrayList<Job> unfinishedList = new ArrayList<>();
+        Object unfinishedList_LOCK = new Object();
         Done done = new Done();
 
         try
@@ -55,9 +49,9 @@ public class Client
             for (int i=0; i < 1; i++)
             {
                 sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
-                      unreceivedList, unreceivedList_LOCK, done));
+                        unreceivedList, unreceivedList_LOCK, done));
                 receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedList, unreceivedList_LOCK,
-                      unfinishedList, unfinishedList_LOCK));
+                        unfinishedList, unfinishedList_LOCK));
 
             }
 

@@ -9,8 +9,8 @@ public class LoadBalance
 
     public static SlaveTypes loadBalance(TimeTrackerForSlave timeTrackerForSlaveA, TimeTrackerForSlave timeTrackerForSlaveB, Job newJob)
     {
-        int slaveATime=0;
-        int slaveBTime=0;
+        int slaveATime = 0;
+        int slaveBTime = 0;
         SlaveTypes slaveType;
 
         if (newJob.getType().equals(JobTypes.A))
