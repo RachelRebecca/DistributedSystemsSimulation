@@ -23,7 +23,6 @@ public class Master
         int portNumber = Integer.parseInt(args[0]);
         int slavePortNumber = Integer.parseInt(args[1]);
 
-
         /*
         Master ArrayLists:
         1) Received but unfinished jobs
