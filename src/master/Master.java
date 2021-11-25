@@ -28,6 +28,13 @@ public class Master
         Master ArrayLists:
         1) Received but unfinished jobs
         2) finished jobs
+
+        Receiver from client fills unfinished jobs
+        Thread that sends to slave empties out unfinished jobs
+        Thread that receives from slave fills finished jobs
+        Thread that sends to client empties out finished jobs
+
+        Add in acknowledgements later
          */
 
         try
