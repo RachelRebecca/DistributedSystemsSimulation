@@ -1,86 +1,96 @@
 package master;
 
 import resources.*;
-import java.net.ServerSocket;
+import java.io.ObjectOutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
 
 public class MasterSendingThreadToSlave extends Thread
 {
 
-    ServerSocket slaveServerSocket;
-    TimeTrackerForSlave timeTrackerForSlaveA;
-    TimeTrackerForSlave timeTrackerForSlaveB;
+    private final Socket slaveA;
+    private final Socket slaveB;
+    private final TimeTrackerForSlave timeTrackerForSlaveA;
+    private final TimeTrackerForSlave timeTrackerForSlaveB;
+    private final ArrayList<Job> unsentList;
+    private final Object unsent_LOCK;
+    private final Done done;
 
-    public MasterSendingThreadToSlave(ServerSocket serverSocket, TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB)
+    public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
+                                      TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
+                                      ArrayList<Job> unsentJobList, Object unsentJobList_LOCK, Done isDone)
     {
-        slaveServerSocket = serverSocket;
+        slaveA = slaveSocketA;
+        slaveB = slaveSocketB;
         timeTrackerForSlaveA = timeTrackerA;
         timeTrackerForSlaveB = timeTrackerB;
+        unsentList = unsentJobList;
+        unsent_LOCK = unsentJobList_LOCK;
+        done = isDone;
     }
 
     @Override
     public void run()
     {
+        try
+                (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
+                ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream())
+                )
+        {
+            while (!done.getIsFinished())
+            {
+                // check if there is a job to send
+                Job currJob;
+                int unsentSize;
+                synchronized (unsent_LOCK)
+                {
+                    unsentSize = unsentList.size();
+                }
 
+                if (unsentSize > 0)
+                {
+                    // if there is, get the first job, send it to the best slave, and update the slave time tracker
+                    synchronized (unsent_LOCK)
+                    {
+                        currJob = unsentList.get(0);
+                        unsentList.remove(0);
+                    }
+
+                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, currJob);
+                    if (slave.equals(SlaveTypes.A))
+                    {
+                        objectOutputStreamSlaveA.writeObject(currJob);
+                        updateTimeTracker(currJob, timeTrackerForSlaveA);
+                    }
+                    else
+                    {
+                        objectOutputStreamSlaveB.writeObject(currJob);
+                        updateTimeTracker(currJob, timeTrackerForSlaveB);
+                    }
+                }
+
+                if (done.getIsFinished())
+                {
+                    done.setFinished(true);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
+        System.out.println("exiting thread.");
     }
 
-    /*
-    private void loadBalance(Job newJob)
+    public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
     {
-        int slaveATime=0;
-        int slaveBTime=0;
-
-        if (newJob.getType().equals(JobTypes.A))
+        if (currJob.getType().equals(JobTypes.A))
         {
-            slaveATime = 2000;
-            slaveBTime = 10000;
+            timeTrackerForSlave.addA();
         }
-        else if (newJob.getType().equals(JobTypes.B))
+        else
         {
-            slaveATime = 10000;
-            slaveBTime = 2000;
+            timeTrackerForSlave.addB();
         }
-
-        int comparison = (timeTrackerForSlaveA.getTime() + slaveATime
-                            - (timeTrackerForSlaveB.getTime() + slaveBTime));
-
-        JobTypes type = newJob.getType();
-        if (comparison < 0)
-        {
-            // send to slave A    //how do you send to slave A??
-
-            if (newJob.getType().equals(JobTypes.A))
-            {
-                timeTrackerForSlaveA.addA();
-            } else
-            {
-                timeTrackerForSlaveA.addB();
-            }
-
-
-        } else if (comparison == 0)
-        {
-            if (newJob.getType().equals(JobTypes.A))
-            {
-                // send to A
-                timeTrackerForSlaveA.addA();
-            } else
-            {
-                // send to B
-                timeTrackerForSlaveB.addB();
-            }
-        } else
-        {
-            // send to slave B
-
-            if (newJob.getType().equals(JobTypes.A))
-            {
-                timeTrackerForSlaveB.addA();
-            } else
-            {
-                timeTrackerForSlaveB.addB();
-            }
-        }
-
     }
-     */
 }
