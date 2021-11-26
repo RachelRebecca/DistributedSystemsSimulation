@@ -5,6 +5,7 @@ import resources.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Master
 {
@@ -36,8 +37,16 @@ public class Master
         Add in acknowledgements later
          */
 
+        // setup for threads
+        ArrayList<Job> unfinishedJobs = new ArrayList<>();
+        ArrayList<Job> finishedJobs = new ArrayList<>();
+        Object unfinishedJob_LOCK = new Object();
+        Object finishedJob_LOCK = new Object();
+
         try
                 (
+                        // move these to threads for extra credit
+                        // hardcode 2 slaves for regular
                         ServerSocket serverSocket = new ServerSocket(portNumber);
                         Socket clientSocket = serverSocket.accept();
                         ObjectOutputStream objectOutputStreamClient = new ObjectOutputStream(clientSocket.getOutputStream());

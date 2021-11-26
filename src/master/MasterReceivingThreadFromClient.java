@@ -10,15 +10,15 @@ public class MasterReceivingThreadFromClient extends Thread
 {
     private Socket clientSocket;
     private Done done;
-    private ArrayList<Job> unsentList;
-    private final Object unsentList_LOCK;
+    private ArrayList<Job> unfinishedJobs;
+    private final Object unfinishedJob_LOCK;
 
 
-    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, ArrayList<Job> unsentList, Object unsentList_LOCK)
+    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK)
     {
         this.clientSocket = clientSocket;
-        this.unsentList = unsentList;
-        this.unsentList_LOCK = unsentList_LOCK;
+        this.unfinishedJobs = unfinishedJobs;
+        this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.done = done;
     }
 
@@ -34,9 +34,9 @@ public class MasterReceivingThreadFromClient extends Thread
                 if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
                     receivedJob.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
-                    synchronized (unsentList_LOCK)
+                    synchronized (unfinishedJob_LOCK)
                     {
-                        unsentList.add(receivedJob);
+                        unfinishedJobs.add(receivedJob);
                     }
                     System.out.println("Got a job from client: " + receivedJob.getType() + receivedJob.getId());
                 }

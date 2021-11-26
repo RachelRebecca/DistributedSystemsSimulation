@@ -12,20 +12,20 @@ public class MasterSendingThreadToSlave extends Thread
     private final Socket slaveB;
     private final TimeTrackerForSlave timeTrackerForSlaveA;
     private final TimeTrackerForSlave timeTrackerForSlaveB;
-    private final ArrayList<Job> unsentList;
-    private final Object unsent_LOCK;
+    private final ArrayList<Job> unfinishedJobs;
+    private final Object unfinishedJobs_LOCK;
     private final Done done;
 
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
                                       TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
-                                      ArrayList<Job> unsentJobList, Object unsentJobList_LOCK, Done isDone)
+                                      ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done isDone)
     {
         slaveA = slaveSocketA;
         slaveB = slaveSocketB;
         timeTrackerForSlaveA = timeTrackerA;
         timeTrackerForSlaveB = timeTrackerB;
-        unsentList = unsentJobList;
-        unsent_LOCK = unsentJobList_LOCK;
+        this.unfinishedJobs = unfinishedJobs;
+        this.unfinishedJobs_LOCK = unfinishedJobs_LOCK;
         done = isDone;
     }
 
@@ -42,18 +42,18 @@ public class MasterSendingThreadToSlave extends Thread
                 // check if there is a job to send
                 Job currJob;
                 int unsentSize;
-                synchronized (unsent_LOCK)
+                synchronized (unfinishedJobs_LOCK)
                 {
-                    unsentSize = unsentList.size();
+                    unsentSize = unfinishedJobs.size();
                 }
 
                 if (unsentSize > 0)
                 {
                     // if there is, get the first job, send it to the best slave, and update the slave time tracker
-                    synchronized (unsent_LOCK)
+                    synchronized (unfinishedJobs_LOCK)
                     {
-                        currJob = unsentList.get(0);
-                        unsentList.remove(0);
+                        currJob = unfinishedJobs.get(0);
+                        unfinishedJobs.remove(0);
                     }
 
                     SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, currJob);

@@ -13,19 +13,19 @@ public class MasterSendingThreadToClient extends Thread
     //private Object unsentList_LOCK;
     //private ArrayList<Job> finishedList;
     //private Object finished_LOCK;
-    private ArrayList<Job> allJobs;
-    private final Object allJobs_LOCK;
+    private ArrayList<Job> finishedJobs;
+    private final Object finishedJobs_LOCK;
     private Done done;
 
-    public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> allJobs, Object allJobs_LOCK)
+    public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK)
     {
         this.clientSocket = clientSocket;
        // this.unsentList = unsentList;
         //this.unsentList_LOCK = unsentList_LOCK;
         //this.finishedList = finishedList;
         //this.finished_LOCK = finished_LOCK;
-        this.allJobs = allJobs;
-        this.allJobs_LOCK = allJobs_LOCK;
+        this.finishedJobs = finishedJobs;
+        this.finishedJobs_LOCK = finishedJobs_LOCK;
         this.done = done;
     }
 
@@ -45,22 +45,22 @@ public class MasterSendingThreadToClient extends Thread
                //send finished job to client
 
 
-               currJob = allJobs.get(0);
+               currJob = finishedJobs.get(0);
                if (currJob.getStatus() == JobStatuses.ACK_MASTER_RECEIVED)
                {
                    currJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
                    System.out.println(currJob.getId() + "" + currJob.getType() + " was received by master");
-                   synchronized (allJobs_LOCK)
+                   synchronized (finishedJobs_LOCK)
                    {
-                       allJobs.remove(0);
+                       finishedJobs.remove(0);
                    }
                }
                else
                {
                     currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
-                    synchronized (allJobs_LOCK)
+                    synchronized (finishedJobs_LOCK)
                     {
-                        allJobs.remove(0);
+                        finishedJobs.remove(0);
                         System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
                     }
                }
