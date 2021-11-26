@@ -43,7 +43,13 @@ public class Master
         Object unfinishedJob_LOCK = new Object();
         Object finishedJob_LOCK = new Object();
 
-        // TODO: FIX ALL OF THIS!!!
+        ArrayList<Thread> masterToClients = new ArrayList<>();
+        ArrayList<Thread> masterToSlaves = new ArrayList<>();
+
+        // start the pre-determined number of client and slave maker threads (start with 1)
+        // continue until done: done goes from master into each maker, and from each maker into each client/slave sending/receiving thread
+
+        // TODO: GET RID OF ALL OF THIS!!!
         try
                 (
                         // move these to threads for extra credit
