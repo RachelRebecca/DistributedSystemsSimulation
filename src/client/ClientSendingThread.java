@@ -11,17 +11,12 @@ public class ClientSendingThread extends Thread
     private Socket clientSocket;
     private  ArrayList<Job> unsentList;
     private final Object unsent_LOCK;
-    private ArrayList<Job> unreceivedList;
-    private final Object unreceived_LOCK;
     private Done done;
 
-    public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,
-                               ArrayList<Job> unreceivedList, Object unreceived_LOCK, Done isDone) {
+    public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK, Done isDone) {
         this.clientSocket = clientSocket;
         this.unsentList = unsentList;
         this.unsent_LOCK = unsent_LOCK;
-        this.unreceivedList = unreceivedList;
-        this.unreceived_LOCK = unreceived_LOCK;
         this.done = isDone;
     }
 
@@ -48,13 +43,9 @@ public class ClientSendingThread extends Thread
                         currJob = unsentList.get(0);
                         unsentList.remove(0);
                     }
+
                     //send to master
                     requestWriter.writeObject(currJob);
-
-                    synchronized (unreceived_LOCK)
-                    {
-                        unreceivedList.add(currJob);
-                    }
                 }
 
                 if (done.getIsFinished())

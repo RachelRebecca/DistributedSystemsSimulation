@@ -31,10 +31,10 @@ public class Client
         ArrayList<Thread> receivingThreads = new ArrayList<>();
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
-        ArrayList<Job> unreceivedList = new ArrayList<>();
-        Object unreceivedList_LOCK = new Object();
-        ArrayList<Job> unfinishedList = new ArrayList<>();
-        Object unfinishedList_LOCK = new Object();
+//        ArrayList<Job> unreceivedList = new ArrayList<>();
+//        Object unreceivedList_LOCK = new Object();
+//        ArrayList<Job> unfinishedList = new ArrayList<>();
+//        Object unfinishedList_LOCK = new Object();
         Done done = new Done();
 
         try
@@ -48,10 +48,8 @@ public class Client
             //(arbitrarily) making 1 (want to ultimately switch to 3) of each kind of thread
             for (int i=0; i < 1; i++)
             {
-                sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
-                        unreceivedList, unreceivedList_LOCK, done));
-                receivingThreads.add(new ClientReceivingThread(clientSocket, unreceivedList, unreceivedList_LOCK,
-                        unfinishedList, unfinishedList_LOCK));
+                sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done));
+                receivingThreads.add(new ClientReceivingThread(clientSocket));
 
             }
 

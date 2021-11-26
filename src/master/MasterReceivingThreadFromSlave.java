@@ -35,7 +35,7 @@ public class MasterReceivingThreadFromSlave extends Thread
             {
                 if (receivedJob.getStatus() == JobStatuses.FINISHED_SEND_TO_MASTER)
                 {
-                    receivedJob.setStatus(JobStatuses.ACK_MASTER_RECEIVED_FINISHED);
+                    receivedJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
                     synchronized (finishedJobs_LOCK)
                     {
                         finishedJobs.add(receivedJob);

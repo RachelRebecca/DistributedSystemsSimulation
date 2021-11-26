@@ -46,24 +46,14 @@ public class MasterSendingThreadToClient extends Thread
 
 
                currJob = finishedJobs.get(0);
-               if (currJob.getStatus() == JobStatuses.ACK_MASTER_RECEIVED)
-               {
-                   currJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
-                   System.out.println(currJob.getId() + "" + currJob.getType() + " was received by master");
-                   synchronized (finishedJobs_LOCK)
-                   {
-                       finishedJobs.remove(0);
-                   }
-               }
-               else
-               {
-                    currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
-                    synchronized (finishedJobs_LOCK)
-                    {
-                        finishedJobs.remove(0);
-                        System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
-                    }
-               }
+
+                currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
+                synchronized (finishedJobs_LOCK)
+                {
+                    finishedJobs.remove(0);
+                    System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
+                }
+
                if (done.getIsFinished())
                {
                    done.setFinished(true);

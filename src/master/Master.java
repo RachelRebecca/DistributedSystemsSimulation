@@ -64,11 +64,6 @@ public class Master
                 Job clientRequest = (Job) objectInputStreamClient.readObject();
                 System.out.println("Got a job from client: " + clientRequest.getType() + clientRequest.getId());
 
-                // send ack
-                clientRequest.setStatus(JobStatuses.ACK_MASTER_RECEIVED);
-                objectOutputStreamClient.writeObject(clientRequest);
-                System.out.println("Sending acknowledgement");
-
                 // choose slave
 
                 // send to slave
