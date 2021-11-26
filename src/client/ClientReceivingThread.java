@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class ClientReceivingThread extends Thread
 {
-    private Socket clientSocket;
+    private final Socket clientSocket;
 
     public ClientReceivingThread(Socket clientSocket)
     {

@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 public class MasterReceivingThreadFromSlave extends Thread
 {
-    private Socket slaveSocket;
-    private Done done;
-    private ArrayList<Job> finishedJobs;
+    private final Socket slaveSocket;
+    private final Done done;
+    private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
 
 

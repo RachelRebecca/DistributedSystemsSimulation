@@ -9,10 +9,6 @@ import java.util.ArrayList;
 public class MasterSendingThreadToClient extends Thread
 {
     private Socket clientSocket;
-    //private ArrayList<Job> unsentList;
-    //private Object unsentList_LOCK;
-    //private ArrayList<Job> finishedList;
-    //private Object finished_LOCK;
     private ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
     private Done done;
@@ -20,10 +16,6 @@ public class MasterSendingThreadToClient extends Thread
     public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK)
     {
         this.clientSocket = clientSocket;
-       // this.unsentList = unsentList;
-        //this.unsentList_LOCK = unsentList_LOCK;
-        //this.finishedList = finishedList;
-        //this.finished_LOCK = finished_LOCK;
         this.finishedJobs = finishedJobs;
         this.finishedJobs_LOCK = finishedJobs_LOCK;
         this.done = done;
@@ -38,9 +30,6 @@ public class MasterSendingThreadToClient extends Thread
            while (!done.getIsFinished())
            {
                Job currJob;
-               //send acknowledgement to client that job has been received
-               //currJob = unsentList.get(0);
-               //unsentList.remove(0);
 
                //send finished job to client
 

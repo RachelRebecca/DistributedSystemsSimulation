@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class MasterReceivingThreadFromClient extends Thread
 {
-    private Socket clientSocket;
-    private Done done;
-    private ArrayList<Job> unfinishedJobs;
+    private final Socket clientSocket;
+    private final Done done;
+    private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJob_LOCK;
 
 

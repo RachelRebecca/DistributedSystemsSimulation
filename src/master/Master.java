@@ -43,6 +43,7 @@ public class Master
         Object unfinishedJob_LOCK = new Object();
         Object finishedJob_LOCK = new Object();
 
+        // TODO: FIX ALL OF THIS!!!
         try
                 (
                         // move these to threads for extra credit

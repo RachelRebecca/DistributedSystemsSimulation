@@ -17,7 +17,7 @@ public class Client
 
     public static void main(String[] args)
     {
-        if (args.length != 3 || !isInteger(args[1]) || !isInteger(args[2]))
+        if (args.length != 3 || isNotInteger(args[1]) || isNotInteger(args[2]))
         {
             System.err.println("Usage: java Client <host name> <port number> <id>");
             System.exit(1);
@@ -31,10 +31,6 @@ public class Client
         ArrayList<Thread> receivingThreads = new ArrayList<>();
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
-//        ArrayList<Job> unreceivedList = new ArrayList<>();
-//        Object unreceivedList_LOCK = new Object();
-//        ArrayList<Job> unfinishedList = new ArrayList<>();
-//        Object unfinishedList_LOCK = new Object();
         Done done = new Done();
 
         try
@@ -139,7 +135,7 @@ public class Client
      * @param arg (String)
      * @return boolean if arg can be parsed as an integer
      */
-    private static boolean isInteger(String arg)
+    private static boolean isNotInteger(String arg)
     {
         boolean isInteger = true;
         try
@@ -150,6 +146,6 @@ public class Client
         {
             isInteger = false;
         }
-        return isInteger;
+        return !isInteger;
     }
 }

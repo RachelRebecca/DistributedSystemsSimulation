@@ -8,10 +8,10 @@ import java.util.ArrayList;
 
 public class ClientSendingThread extends Thread
 {
-    private Socket clientSocket;
-    private  ArrayList<Job> unsentList;
+    private final Socket clientSocket;
+    private final ArrayList<Job> unsentList;
     private final Object unsent_LOCK;
-    private Done done;
+    private final Done done;
 
     public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK, Done isDone) {
         this.clientSocket = clientSocket;
