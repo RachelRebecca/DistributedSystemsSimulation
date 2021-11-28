@@ -46,7 +46,6 @@ public class Client
             {
                 sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done));
                 receivingThreads.add(new ClientReceivingThread(clientSocket));
-
             }
 
             for (Thread sThread: sendingThreads)
@@ -95,7 +94,7 @@ public class Client
                         {
                             unsentList.add(job);
                         }
-                        System.out.println("Created new B job");
+                        System.out.println("Created new B job: " + job.getId());
                         break;
                     }
                 }
