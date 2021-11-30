@@ -42,6 +42,17 @@ public class MasterReceivingThreadFromSlave extends Thread
                     }
                     System.out.println("Got a completed job from slave: " + receivedJob.getType() + receivedJob.getId());
                 }
+
+                else if (receivedJob.getStatus().equals(JobStatuses.IS_SLAVE_A))
+                {
+                    System.out.println("Received slave a announcement");
+                }
+
+
+                else if (receivedJob.getStatus().equals(JobStatuses.IS_SLAVE_B))
+                {
+                    System.out.println("Received slave b announcement");
+                }
             }
 
 

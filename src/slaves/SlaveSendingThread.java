@@ -31,9 +31,23 @@ public class SlaveSendingThread extends Thread
         try (ObjectOutputStream requestWriter = // stream to write text requests to server
                      new ObjectOutputStream(slaveSocket.getOutputStream()))
         {
+
+            if (slaveType.equals(SlaveTypes.A))
+            {
+                System.out.println("I'm an A Slave");
+                requestWriter.writeObject(new Job(-1, JobTypes.NULL, -1, JobStatuses.IS_SLAVE_A));
+            }
+            else
+            {
+                System.out.println("I'm a B Slave");
+                requestWriter.writeObject(new Job(-1, JobTypes.NULL, -1, JobStatuses.IS_SLAVE_B));
+            }
+
+
             while (!done.getIsFinished())
             {
                 Job myJob;
+                /*
                 if (isFirstRun)
                 {
                     // send identification job
@@ -48,6 +62,7 @@ public class SlaveSendingThread extends Thread
                     isFirstRun = false;
                     continue;
                 }
+                 */
                 int numDone;
                 synchronized (completedJobList_LOCK)
                 {

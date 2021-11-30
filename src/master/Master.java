@@ -93,6 +93,7 @@ public class Master
                     masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs, finishedJobs,
                     unfinishedJob_LOCK, finishedJob_LOCK, isDone);
 
+
             // properly assign slaveA and slaveB
             Job announcement1 = (Job) objectInputStreamSlave1.readObject();
             Job announcement2 = (Job) objectInputStreamSlave2.readObject(); // unused, to get rid of the type announcement job
@@ -114,6 +115,7 @@ public class Master
 
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
+            clientMaker.start(); // WE FORGOT TO DO THIS
 
             for (int i = 0; i < 3; ++i)
             {
@@ -134,6 +136,7 @@ public class Master
             {
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
+                clientMaker.join(); // WE FORGOT TO DO THIS
 
                 for (int i = 0; i < 3; ++i)
                 {
