@@ -15,8 +15,6 @@ public class MasterToSlave extends Thread
     Object masterSendingThreadToSlave_LOCK;
 
     ServerSocket serverSocket;
-    final Done receivingIsDone;
-    final Done sendingIsDone;
     final ArrayList<Job> unfinishedJobs;
     final ArrayList<Job> finishedJobs;
     final Object unfinishedJob_LOCK;
@@ -32,7 +30,7 @@ public class MasterToSlave extends Thread
 
     public MasterToSlave(ArrayList<Thread> masterReceivingThreadFromSlave, Object masterReceivingThreadFromSlave_LOCK,
                           ArrayList<Thread> masterSendingThreadToSlave, Object masterSendingThreadToSlave_LOCK,
-                          ServerSocket serverSocket, Done receivingIsDone, Done sendingIsDone,
+                          ServerSocket serverSocket,
                           ArrayList<Job> unfinishedJobs, ArrayList<Job> finishedJobs,
                           Object unfinishedJob_LOCK, Object finishedJob_LOCK,
                           TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
@@ -46,8 +44,6 @@ public class MasterToSlave extends Thread
 
         this.serverSocket = serverSocket;
 
-        this.sendingIsDone = sendingIsDone;
-        this.receivingIsDone = receivingIsDone;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.finishedJobs = finishedJobs;
@@ -72,14 +68,14 @@ public class MasterToSlave extends Thread
                 synchronized (masterReceivingThreadFromSlave_LOCK)
                 {
                     masterReceivingThreadFromSlave.add(new MasterReceivingThreadFromSlave(
-                            slaveSocket, receivingIsDone, finishedJobs, finishedJob_LOCK));
+                            slaveSocket, done, finishedJobs, finishedJob_LOCK));
                 }
                 synchronized (masterSendingThreadToSlave_LOCK)
                 {
                     masterSendingThreadToSlave.add(new MasterSendingThreadToSlave(
                             slaveSocketA, slaveSocketB,
                             timeTrackerA, timeTrackerB,
-                            unfinishedJobs, unfinishedJob_LOCK, sendingIsDone));
+                            unfinishedJobs, unfinishedJob_LOCK, done));
                 }
             }
             catch (Exception e)

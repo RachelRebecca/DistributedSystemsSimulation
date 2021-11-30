@@ -1,7 +1,5 @@
 package master;
 
-import client.ClientReceivingThread;
-import client.ClientSendingThread;
 import resources.Done;
 import resources.Job;
 
@@ -17,8 +15,6 @@ public class MasterToClient extends Thread
     Object masterSendingThreadToClient_LOCK;
 
     ServerSocket serverSocket;
-    final Done receivingIsDone;
-    final Done sendingIsDone;
     final ArrayList<Job> unfinishedJobs;
     final ArrayList<Job> finishedJobs;
     final Object unfinishedJob_LOCK;
@@ -29,7 +25,7 @@ public class MasterToClient extends Thread
 
     public MasterToClient(ArrayList<Thread> masterReceivingThreadFromClient, Object masterReceivingThreadFromClient_LOCK,
                           ArrayList<Thread> masterSendingThreadToClient, Object masterSendingThreadToClient_LOCK,
-                          ServerSocket serverSocket, Done receivingIsDone, Done sendingIsDone,
+                          ServerSocket serverSocket,
                           ArrayList<Job> unfinishedJobs, ArrayList<Job> finishedJobs,
                           Object unfinishedJob_LOCK, Object finishedJob_LOCK,
                           Done isDone)
@@ -41,8 +37,6 @@ public class MasterToClient extends Thread
 
         this.serverSocket = serverSocket;
 
-        this.sendingIsDone = sendingIsDone;
-        this.receivingIsDone = receivingIsDone;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.finishedJobs = finishedJobs;
@@ -61,12 +55,12 @@ public class MasterToClient extends Thread
                 synchronized (masterReceivingThreadFromClient_LOCK)
                 {
                     masterReceivingThreadFromClient.add(new MasterReceivingThreadFromClient(
-                            clientSocket, receivingIsDone, unfinishedJobs, unfinishedJob_LOCK));
+                            clientSocket, done, unfinishedJobs, unfinishedJob_LOCK));
                 }
                 synchronized (masterSendingThreadToClient_LOCK)
                 {
                     masterSendingThreadToClient.add(new MasterSendingThreadToClient(
-                            clientSocket, sendingIsDone, finishedJobs, finishedJob_LOCK));
+                            clientSocket, done, finishedJobs, finishedJob_LOCK));
                 }
             }
             catch (Exception e)

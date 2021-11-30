@@ -13,8 +13,6 @@ public class Client
     // IP address = "127.0.0.1"
     // port = 30121
 
-    private static int id;
-
     public static void main(String[] args)
     {
         if (args.length != 3 || isNotInteger(args[1]) || isNotInteger(args[2]))
@@ -25,10 +23,8 @@ public class Client
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-        id = Integer.parseInt(args[2]);
+        int id = Integer.parseInt(args[2]);
 
-        ArrayList<Thread> sendingThreads = new ArrayList<>();
-        ArrayList<Thread> receivingThreads = new ArrayList<>();
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
         Done done = new Done();
@@ -41,22 +37,11 @@ public class Client
                                  new InputStreamReader(System.in))
                 )
         {
-            //(arbitrarily) making 1 (want to ultimately switch to 3) of each kind of thread
-            for (int i=0; i < 1; i++)
-            {
-                sendingThreads.add(new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done));
-                receivingThreads.add(new ClientReceivingThread(clientSocket));
-            }
+            ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done);
+            ClientReceivingThread receivingThread = new ClientReceivingThread(clientSocket);
 
-            for (Thread sThread: sendingThreads)
-            {
-                sThread.start();
-            }
-
-            for (Thread rThread: receivingThreads)
-            {
-                rThread.start();
-            }
+            sendingThread.start();
+            receivingThread.start();
 
             label:
             while (true)
@@ -106,14 +91,8 @@ public class Client
 
             try
             {
-                for (Thread sThread : sendingThreads)
-                {
-                    sThread.join();
-                }
-                for (Thread rThread : receivingThreads)
-                {
-                    rThread.join();
-                }
+                sendingThread.join();
+                receivingThread.join();
             }
             catch (Exception e)
             {
