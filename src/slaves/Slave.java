@@ -53,7 +53,7 @@ public class Slave
             //can change the 1's later:
             for (int i = 0; i < 1; i++)
             {
-                sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done));
+                sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done, slaveType));
                 receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
             }
 
