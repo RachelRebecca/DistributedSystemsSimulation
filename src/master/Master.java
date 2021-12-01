@@ -1,5 +1,6 @@
 package master;
 
+import org.w3c.dom.ls.LSOutput;
 import resources.*;
 
 import java.io.*;
@@ -15,14 +16,15 @@ public class Master
         // Hard code in port number if necessary:
         //args = new String[] { "30121" };
 
-        if (args.length != 2 || !isInteger(args[0]))
+        if (args.length != 3 || !isInteger(args[0]))
         {
-            System.err.println("Usage: java EchoServer <client port number> <slave port number>");
+            System.err.println("Usage: java EchoServer <client port number> <slave a port number> <slave b port number>");
             System.exit(1);
         }
 
         int portNumber = Integer.parseInt(args[0]);
-        int slavePortNumber = Integer.parseInt(args[1]);
+        int slaveAPortNumber = Integer.parseInt(args[1]);
+        int slaveBPortNumber = Integer.parseInt(args[2]);
 
         /*
         Master ArrayLists:
@@ -61,6 +63,7 @@ public class Master
 
         Done isDone = new Done();
 
+        System.out.println("Done with setup.");
         // may be used in the future - for now we'll only have one of each
 //        ArrayList<Thread> masterToClients = new ArrayList<>();
 //        ArrayList<Thread> masterToSlaves = new ArrayList<>();
@@ -78,12 +81,12 @@ public class Master
 //                        ObjectOutputStream objectOutputStreamClient = new ObjectOutputStream(clientSocket.getOutputStream());
 //                        ObjectInputStream objectInputStreamClient = new ObjectInputStream(clientSocket.getInputStream());
 
-                        ServerSocket slaveServerSocket1 = new ServerSocket(slavePortNumber);
+                        ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
                         Socket slaveSocket1 = slaveServerSocket1.accept();
                         ObjectOutputStream objectOutputStreamSlave1 = new ObjectOutputStream(slaveSocket1.getOutputStream());
                         ObjectInputStream objectInputStreamSlave1 = new ObjectInputStream(slaveSocket1.getInputStream());
 
-                        ServerSocket slaveServerSocket2 = new ServerSocket(slavePortNumber);
+                        ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber);
                         Socket slaveSocket2 = slaveServerSocket2.accept();
                         ObjectOutputStream objectOutputStreamSlave2 = new ObjectOutputStream(slaveSocket2.getOutputStream());
                         ObjectInputStream objectInputStreamSlave2 = new ObjectInputStream(slaveSocket2.getInputStream())
@@ -93,6 +96,7 @@ public class Master
                     masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs, finishedJobs,
                     unfinishedJob_LOCK, finishedJob_LOCK, isDone);
 
+            System.out.println("Master to Client thread created");
 
             // properly assign slaveA and slaveB
             Job announcement1 = (Job) objectInputStreamSlave1.readObject();
@@ -101,13 +105,17 @@ public class Master
             {
                 slaveA = slaveSocket1;
                 slaveB = slaveSocket2;
+                System.out.println("Slave A = socket1, slave B = socket2");
             }
             else
             {
                 slaveA = slaveSocket2;
                 slaveB = slaveSocket1;
+                System.out.println("Slave A = socket2, slave B = socket1");
+
             }
 
+            System.out.println("Slaves were assigned.");
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave (slaveA, isDone,
                     finishedJobs, finishedJob_LOCK);
             MasterReceivingThreadFromSlave receivingFromSlaveB = new MasterReceivingThreadFromSlave (slaveB, isDone,
@@ -117,12 +125,11 @@ public class Master
             receivingFromSlaveB.start();
             clientMaker.start(); // WE FORGOT TO DO THIS
 
-            for (int i = 0; i < 3; ++i)
-            {
-                masterSendingThreadToSlave.add(new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
-                        timeTrackerB, unfinishedJobs, unfinishedJob_LOCK, isDone));
-                masterSendingThreadToSlave.get(i).start();
-            }
+            MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
+                        timeTrackerB, unfinishedJobs, unfinishedJob_LOCK, isDone);
+            sThread.start();
+
+            System.out.println("Started all threads");
 
             while (!isDone.getIsFinished())
             {
@@ -138,10 +145,8 @@ public class Master
                 receivingFromSlaveB.join();
                 clientMaker.join(); // WE FORGOT TO DO THIS
 
-                for (int i = 0; i < 3; ++i)
-                {
-                    masterSendingThreadToSlave.get(i).join();
-                }
+                sThread.join();
+
             }
             catch (Exception e)
             {

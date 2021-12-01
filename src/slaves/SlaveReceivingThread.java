@@ -24,10 +24,11 @@ public class SlaveReceivingThread extends Thread
     {
         try (ObjectInputStream objectInput = new ObjectInputStream(slaveSocket.getInputStream()))
         {
+            Job job;
             while (!done.getIsFinished())
             {
                 System.out.println("waiting for a job");
-                Job job = (Job) objectInput.readObject();
+                job = (Job) objectInput.readObject();
                 synchronized (incompleteList_LOCK)
                 {
                     System.out.println("Adding incomplete job: " + job.getType() + job.getId());
