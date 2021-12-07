@@ -98,7 +98,7 @@ public class SlaveA
         catch (Exception e)
         {
             System.out.println("In outer exception");
-//            System.out.println(e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

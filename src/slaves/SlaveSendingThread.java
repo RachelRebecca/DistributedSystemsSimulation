@@ -32,6 +32,7 @@ public class SlaveSendingThread extends Thread
                      new ObjectOutputStream(slaveSocket.getOutputStream()))
         {
 
+            /*
             if (slaveType.equals(SlaveTypes.A))
             {
                 System.out.println("I'm an A Slave");
@@ -42,6 +43,8 @@ public class SlaveSendingThread extends Thread
                 System.out.println("I'm a B Slave");
                 requestWriter.writeObject(new Job(-1, JobTypes.NULL, -1, JobStatuses.IS_SLAVE_B));
             }
+
+             */
 
 
             while (!done.getIsFinished())
