@@ -1,8 +1,6 @@
 package slaves;
 
-import resources.Done;
-import resources.Job;
-import resources.SlaveTypes;
+import resources.*;
 
 import java.net.Socket;
 import java.util.ArrayList;
@@ -36,9 +34,6 @@ public class SlaveB
             slaveType = SlaveTypes.B;
         }
 
-
-        ArrayList<Thread> sendingThreads = new ArrayList<>();
-        ArrayList<Thread> receivingThreads = new ArrayList<>();
         ArrayList<Job> incompleteJobList = new ArrayList<>();
         Object incompleteJob_LOCK = new Object();
         ArrayList<Job> completedJobList = new ArrayList<>();
@@ -47,29 +42,20 @@ public class SlaveB
 
         setABTime(slaveType);
 
+        System.out.println("Slave" + slaveType + "portNumber: " + portNumber);
+
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
 
-            //can change the 1's later:
-            for (int i = 0; i < 1; i++)
-            {
-                sendingThreads.add(new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done, slaveType));
-                receivingThreads.add(new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done));
-            }
+            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done, slaveType);
+            SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done);
 
             // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
                     completedJobList_LOCK, aTime, bTime, done);
 
-            for (Thread sThread : sendingThreads)
-            {
-                sThread.start();
-            }
-            for (Thread rThread : receivingThreads)
-            {
-                rThread.start();
-            }
-
+            sendingThread.start();
+            receivingThread.start();
             doJobThread.start();
 
 //            Thread.sleep(10000);
@@ -78,25 +64,19 @@ public class SlaveB
             try
             {
                 doJobThread.join();
-                for (Thread sThread : sendingThreads)
-                {
-                    sThread.join();
-                }
-                for (Thread rThread : receivingThreads)
-                {
-                    rThread.join();
-                }
+                sendingThread.join();
+                receivingThread.join();
             }
             catch (Exception e)
             {
                 System.out.println("In inner exception");
-                System.out.println(e.getMessage());
+//                System.out.println(e.getMessage());
             }
         }
         catch (Exception e)
         {
             System.out.println("In outer exception");
-            System.out.println(e.getMessage());
+//            System.out.println(e.getMessage());
         }
     }
 

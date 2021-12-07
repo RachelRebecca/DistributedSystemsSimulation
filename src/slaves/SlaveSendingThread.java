@@ -86,6 +86,7 @@ public class SlaveSendingThread extends Thread
                 if (done.getIsFinished())
                 {
                     done.setFinished(true);
+                    requestWriter.close();
                 }
 
             }
