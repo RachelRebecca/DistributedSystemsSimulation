@@ -79,7 +79,7 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Master sending to slave error: " + e.getMessage());
         }
         System.out.println("exiting thread.");
     }

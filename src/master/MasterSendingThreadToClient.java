@@ -32,18 +32,30 @@ public class MasterSendingThreadToClient extends Thread
            while (!done.getIsFinished())
            {
                Job currJob;
+               int finishedJobsSize;
 
-               currJob = finishedJobs.get(0);
+               synchronized (finishedJobs_LOCK)
+               {
+                   finishedJobsSize = finishedJobs.size();
+               }
 
-               //send finished job to client
-               requestWriter.writeObject(currJob);
+               if (finishedJobsSize > 0)
+               {
+                   synchronized (finishedJobs_LOCK)
+                   {
+                       currJob = finishedJobs.get(0);
+                   }
 
-                currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
-                synchronized (finishedJobs_LOCK)
-                {
-                    finishedJobs.remove(0);
-                    System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
-                }
+                   //send finished job to client
+                   requestWriter.writeObject(currJob);
+
+                   currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
+                   synchronized (finishedJobs_LOCK)
+                   {
+                       finishedJobs.remove(0);
+                       System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
+                   }
+               }
 
                if (done.getIsFinished())
                {
@@ -53,8 +65,7 @@ public class MasterSendingThreadToClient extends Thread
        }
        catch (Exception e)
        {
-           System.out.println(e.getMessage());
+           System.out.println("Master sending thread to client error" + e.getMessage());
        }
-
     }
 }

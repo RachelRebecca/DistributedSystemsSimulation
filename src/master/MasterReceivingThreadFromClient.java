@@ -45,7 +45,7 @@ public class MasterReceivingThreadFromClient extends Thread
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Master receiving thread from client error" + e.getMessage());
         }
     }
 }
