@@ -63,7 +63,6 @@ public class Master
 
         Done isDone = new Done();
 
-        System.out.println("Done with setup.");
         // may be used in the future - for now we'll only have one of each
 //        ArrayList<Thread> masterToClients = new ArrayList<>();
 //        ArrayList<Thread> masterToSlaves = new ArrayList<>();

@@ -27,7 +27,6 @@ public class SlaveReceivingThread extends Thread
             Job job;
             while (!done.getIsFinished())
             {
-                System.out.println(objectInput.readObject());
                 job = (Job) objectInput.readObject();
                 System.out.println("Job is " + job.getType() + job.getId());
                 synchronized (incompleteList_LOCK)
@@ -45,7 +44,6 @@ public class SlaveReceivingThread extends Thread
         catch (Exception e)
         {
             System.out.println("BUG!" + e.getMessage());
-            System.out.println(Arrays.toString(e.getStackTrace()));
         }
     }
 }
