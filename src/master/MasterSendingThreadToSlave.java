@@ -81,7 +81,6 @@ public class MasterSendingThreadToSlave extends Thread
         {
             System.out.println("Master sending to slave error: " + e.getMessage());
         }
-        System.out.println("exiting thread.");
     }
 
     public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)

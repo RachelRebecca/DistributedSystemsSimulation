@@ -58,6 +58,5 @@ public class ClientSendingThread extends Thread
         {
             System.out.println(e.getMessage());
         }
-        System.out.println("exiting thread.");
     }
 }

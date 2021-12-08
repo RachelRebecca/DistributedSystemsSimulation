@@ -25,10 +25,8 @@ public class ClientReceivingThread extends Thread
             Job serverMessage;
             while ((serverMessage = (Job) objectInputStream.readObject()) != null)
             {
-                System.out.println("Receiving thread: Got something from master!");
-
                 // output message
-                System.out.println("resources.Job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
+                System.out.println("job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
             }
         }
         catch (Exception e)

@@ -99,9 +99,6 @@ public class Master
             //MasterSendingThreadToClient mtc = new MasterSendingThreadToClient(, isDone, finishedJobs, finishedJob_LOCK);
             //MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient();
 
-
-            System.out.println("Master to Client thread created");
-
             slaveA = slaveSocket1;
             slaveB = slaveSocket2;
 
@@ -123,7 +120,6 @@ public class Master
                 System.out.println("Slave A = socket2, slave B = socket1");
             }
              */
-            System.out.println("Slaves were assigned.");
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave (slaveA, isDone,
                     finishedJobs, finishedJob_LOCK);
             MasterReceivingThreadFromSlave receivingFromSlaveB = new MasterReceivingThreadFromSlave (slaveB, isDone,
@@ -131,13 +127,11 @@ public class Master
 
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
-            clientMaker.start(); // WE FORGOT TO DO THIS
+            clientMaker.start();
 
             MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                         timeTrackerB, unfinishedJobs, unfinishedJob_LOCK, isDone);
             sThread.start();
-
-            System.out.println("Started all threads");
 
             while (!isDone.getIsFinished())
             {
@@ -205,9 +199,7 @@ public class Master
         }
         catch (Exception e)		// generic exception in case of any issues that arise
         {
-            System.out.println(
-                    "Exception caught when trying to listen on port " + portNumber + " or listening for a connection");
-            System.out.println(e.getMessage());
+            System.out.println("Master IO error: " + e.getMessage());
         }
 
     }

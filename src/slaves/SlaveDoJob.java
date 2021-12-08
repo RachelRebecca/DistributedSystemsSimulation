@@ -41,12 +41,14 @@ public class SlaveDoJob extends Thread
                 }
                 if (length > 0)
                 {
-                    System.out.println("doJob: got a job to do!");
+                    System.out.print("doJob: got a job to do! ");
                     synchronized (jobsToCompleteLock)
                     {
                         myJob = jobsToComplete.get(0);
                         jobsToComplete.remove(0);
                     }
+
+                    System.out.println(myJob.getType() + "" + myJob.getId());
 
                     if (myJob.getType() == JobTypes.A)
                     {

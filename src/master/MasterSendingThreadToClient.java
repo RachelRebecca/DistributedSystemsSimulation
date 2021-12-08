@@ -27,8 +27,6 @@ public class MasterSendingThreadToClient extends Thread
        try (ObjectOutputStream requestWriter = // stream to write text requests to server
             new ObjectOutputStream(clientSocket.getOutputStream()))
        {
-           System.out.println("Entered Master Sending Thread from Client");
-
            while (!done.getIsFinished())
            {
                Job currJob;
@@ -53,7 +51,7 @@ public class MasterSendingThreadToClient extends Thread
                    synchronized (finishedJobs_LOCK)
                    {
                        finishedJobs.remove(0);
-                       System.out.println(currJob.getId() + "" + currJob.getType() + " was sent to client");
+                       System.out.println(currJob.getType() + "" + currJob.getId()  + " was sent to client");
                    }
                }
 

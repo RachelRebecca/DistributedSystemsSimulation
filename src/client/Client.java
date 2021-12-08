@@ -68,7 +68,7 @@ public class Client
                         {
                             unsentList.add(job);
                         }
-                        System.out.println("Created new A job: " + job.getId());
+                        System.out.println("Created new A job: " + job.getType() + job.getId());
                         break;
                     }
                     case "B":
@@ -79,7 +79,7 @@ public class Client
                         {
                             unsentList.add(job);
                         }
-                        System.out.println("Created new B job: " + job.getId());
+                        System.out.println("Created new B job: " + job.getType() + job.getId());
                         break;
                     }
                 }
@@ -87,7 +87,6 @@ public class Client
             }
 
             done.setFinished(true);
-            System.out.println("resources.Done has been updated in client.Client.");
 
             try
             {
@@ -98,7 +97,6 @@ public class Client
             {
                 System.out.println(e.getMessage());
             }
-            System.out.println("Exiting. Thank you for your participation.");
             System.exit(0);
         }
         catch (Exception e)
