@@ -53,7 +53,7 @@ public class MasterSendingThreadToSlave extends Thread
                     synchronized (unfinishedJobs_LOCK)
                     {
                         currJob = unfinishedJobs.get(0);
-                        System.out.println("current job [from master sending] is " + currJob);
+                        System.out.println("current job [from master sending] is " + currJob.getType() + currJob.getId());
                         unfinishedJobs.remove(0);
                     }
 
@@ -84,7 +84,6 @@ public class MasterSendingThreadToSlave extends Thread
         System.out.println("exiting thread.");
     }
 
-    //shouldn't this be SLAVETYPE not jobtype?
     public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
     {
         if (currJob.getType().equals(JobTypes.A))

@@ -71,14 +71,13 @@ public class SlaveSendingThread extends Thread
 
                 if (numDone > 0)
                 {
-                    System.out.println("There's a finished job!");
+                    System.out.print("There's a finished job!");
                     synchronized (completedJobList_LOCK)
                     {
                         myJob = completeJobs.get(0);
                         completeJobs.remove(0);
-
                     }
-                    System.out.println("REACHED THIS POINT");
+                    System.out.println("" + myJob.getType() + myJob.getId());
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
                 }
