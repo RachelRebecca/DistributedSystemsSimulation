@@ -40,6 +40,8 @@ public class Master
          */
 
         // setup for threads
+        ArrayList<Thread> masterToClientThreads = new ArrayList<>();
+
         ArrayList<Thread> masterReceivingThreadFromClient = new ArrayList<>();
         Object masterReceivingThreadFromClient_LOCK = new Object();
         ArrayList<Thread> masterSendingThreadToClient = new ArrayList<>();
@@ -91,9 +93,13 @@ public class Master
                        // ObjectInputStream objectInputStreamSlave2 = new ObjectInputStream(slaveSocket2.getInputStream())
                 )
         {
-            MasterToClient clientMaker = new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
-                    masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
-                    finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone);
+            //two master to client threads
+            for (int i = 0; i < 2; i++)
+            {
+                masterToClientThreads.add(new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
+                        masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
+                        finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone));
+            }
 
             //MasterSendingThreadToClient mtc = new MasterSendingThreadToClient(, isDone, finishedJobs, finishedJob_LOCK);
             //MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient();
@@ -126,7 +132,11 @@ public class Master
 
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
-            clientMaker.start();
+
+            for (Thread cm : masterToClientThreads)
+            {
+                cm.start();
+            }
 
             MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                         timeTrackerB, unfinishedJobs, unfinishedJob_LOCK, isDone);
@@ -144,7 +154,18 @@ public class Master
             {
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
-                clientMaker.join(); // WE FORGOT TO DO THIS
+
+                for (Thread cm : masterToClientThreads)
+                {
+                    try
+                    {
+                        cm.join();
+                    }
+                    catch (Exception e)
+                    {
+                        System.out.println("Joining client makers: " + e.getMessage());
+                    }
+                }
 
                 sThread.join();
 
