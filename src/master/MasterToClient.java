@@ -53,36 +53,20 @@ public class MasterToClient extends Thread
             {
                 Socket clientSocket = serverSocket.accept();
 
-                /*
-                int mscSize;
-                synchronized (masterSendingThreadToClient)
-                {
-                    mscSize = masterSendingThreadToClient.size();
-                }
-
-                int mrcSize;
-                synchronized (masterSendingThreadToClient)
-                {
-                    mscSize = masterSendingThreadToClient.size();
-                }
-                 */
-
                 synchronized (masterReceivingThreadFromClient_LOCK)
                 {
                     MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
                             clientSocket, done, unfinishedJobs, unfinishedJob_LOCK);
                     masterReceivingThreadFromClient.add(mrc);
                     mrc.start();
-
-                    System.out.println("Starting new receiving thread from client - MasterToClient");
                 }
+
                 synchronized (masterSendingThreadToClient_LOCK)
                 {
                     MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
                             clientSocket, done, finishedJobs, finishedJob_LOCK);
                     masterSendingThreadToClient.add(msc);
                     msc.start();
-                    System.out.println("Starting new sending thread from client - MasterToClient");
                 }
 
                 if (done.getIsFinished())
@@ -90,10 +74,6 @@ public class MasterToClient extends Thread
                     done.setFinished(true);
                     try
                     {
-                        System.out.println("entering while loop - master sending thread ");
-                        System.out.println("master sending thread to client size" + masterSendingThreadToClient.size());
-                        System.out.println("master receiving thread from client size" + masterReceivingThreadFromClient.size());
-
                         for (Thread msc : masterSendingThreadToClient)
                         {
                             msc.join();
@@ -114,8 +94,6 @@ public class MasterToClient extends Thread
             System.out.println("Entering this try-catch - ALERT!");
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Exiting MasterToClient.");
     }
 
 

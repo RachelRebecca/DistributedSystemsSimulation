@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class Client
+public class Client1
 {
 
     // IP address = "127.0.0.1"
@@ -33,8 +33,8 @@ public class Client
                 (
                         Socket clientSocket = new Socket(hostName, portNumber);
                         BufferedReader stdIn = // standard input stream to get user's requests
-                            new BufferedReader(
-                                 new InputStreamReader(System.in))
+                                new BufferedReader(
+                                        new InputStreamReader(System.in))
                 )
         {
             ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done);
