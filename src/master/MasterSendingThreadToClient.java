@@ -5,6 +5,7 @@ import resources.*;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MasterSendingThreadToClient extends Thread
 {
@@ -64,6 +65,7 @@ public class MasterSendingThreadToClient extends Thread
        catch (Exception e)
        {
            System.out.println("Master sending thread to client error" + e.getMessage());
+           System.out.println(Arrays.toString(e.getStackTrace()));
        }
     }
 }
