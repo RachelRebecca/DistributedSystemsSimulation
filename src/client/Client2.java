@@ -23,7 +23,8 @@ public class Client2
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-        int id = Integer.parseInt(args[2]);
+        int jobId = 1;
+        int clientId = Integer.parseInt(args[2]);
 
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
@@ -63,7 +64,7 @@ public class Client2
                     case "A":
                     case "a":
                     {
-                        Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        Job job = new Job(clientId, JobTypes.A, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -74,7 +75,7 @@ public class Client2
                     case "B":
                     case "b":
                     {
-                        Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        Job job = new Job(clientId, JobTypes.B, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -83,7 +84,7 @@ public class Client2
                         break;
                     }
                 }
-                id++;
+                jobId++;
             }
 
             done.setFinished(true);
