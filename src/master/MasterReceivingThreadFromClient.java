@@ -28,6 +28,7 @@ public class MasterReceivingThreadFromClient extends Thread
         try (// stream to read object response from server
              ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream()))
         {
+            System.out.println("Entered Master Receiving Thread from Client");
             Job receivedJob;
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
             {
@@ -44,7 +45,7 @@ public class MasterReceivingThreadFromClient extends Thread
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Master receiving thread from client error" + e.getMessage());
         }
     }
 }

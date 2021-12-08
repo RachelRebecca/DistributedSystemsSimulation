@@ -53,10 +53,12 @@ public class MasterSendingThreadToSlave extends Thread
                     synchronized (unfinishedJobs_LOCK)
                     {
                         currJob = unfinishedJobs.get(0);
+                        System.out.println("current job [from master sending] is " + currJob);
                         unfinishedJobs.remove(0);
                     }
 
                     SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, currJob);
+                    System.out.println("Sending to " + slave.name());
                     if (slave.equals(SlaveTypes.A))
                     {
                         objectOutputStreamSlaveA.writeObject(currJob);
@@ -77,11 +79,12 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Master sending to slave error: " + e.getMessage());
         }
         System.out.println("exiting thread.");
     }
 
+    //shouldn't this be SLAVETYPE not jobtype?
     public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
     {
         if (currJob.getType().equals(JobTypes.A))

@@ -60,9 +60,9 @@ public class MasterToSlave extends Thread
     @Override
     public void run()
     {
-        while (!done.getIsFinished())
+        try
         {
-            try
+            while (!done.getIsFinished())
             {
                 Socket slaveSocket = serverSocket.accept();
                 synchronized (masterReceivingThreadFromSlave_LOCK)
@@ -78,15 +78,15 @@ public class MasterToSlave extends Thread
                             unfinishedJobs, unfinishedJob_LOCK, done));
                 }
             }
-            catch (Exception e)
-            {
-                System.out.println(e.getMessage());
-            }
 
             if (done.getIsFinished())
             {
                 done.setFinished(true);
             }
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
         }
     }
 }

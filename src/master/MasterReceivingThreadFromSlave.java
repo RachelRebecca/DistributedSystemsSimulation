@@ -58,7 +58,7 @@ public class MasterReceivingThreadFromSlave extends Thread
 
         } catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("Master receiving to slave error: " + e.getMessage());
         }
     }
 }

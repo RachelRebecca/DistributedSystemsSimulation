@@ -77,44 +77,37 @@ public class Master
                         // move these to threads for extra credit
                         // hardcode 2 slaves for regular
                         ServerSocket serverSocket = new ServerSocket(portNumber);
-                        Socket clientSocket = serverSocket.accept();
-                        ObjectOutputStream objectOutputStreamClient = new ObjectOutputStream(clientSocket.getOutputStream());
-                        ObjectInputStream objectInputStreamClient = new ObjectInputStream(clientSocket.getInputStream());
+//                        Socket clientSocket = serverSocket.accept();
+//                        ObjectOutputStream objectOutputStreamClient = new ObjectOutputStream(clientSocket.getOutputStream());
+//                        ObjectInputStream objectInputStreamClient = new ObjectInputStream(clientSocket.getInputStream());
 
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
                         Socket slaveSocket1 = slaveServerSocket1.accept();
-                        ObjectOutputStream objectOutputStreamSlave1 = new ObjectOutputStream(slaveSocket1.getOutputStream());
-                        ObjectInputStream objectInputStreamSlave1 = new ObjectInputStream(slaveSocket1.getInputStream());
+                        //ObjectOutputStream objectOutputStreamSlave1 = new ObjectOutputStream(slaveSocket1.getOutputStream());
+                       // ObjectInputStream objectInputStreamSlave1 = new ObjectInputStream(slaveSocket1.getInputStream());
 
                         ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber);
                         Socket slaveSocket2 = slaveServerSocket2.accept();
-                        ObjectOutputStream objectOutputStreamSlave2 = new ObjectOutputStream(slaveSocket2.getOutputStream());
-                        ObjectInputStream objectInputStreamSlave2 = new ObjectInputStream(slaveSocket2.getInputStream())
+                        //ObjectOutputStream objectOutputStreamSlave2 = new ObjectOutputStream(slaveSocket2.getOutputStream());
+                       // ObjectInputStream objectInputStreamSlave2 = new ObjectInputStream(slaveSocket2.getInputStream())
                 )
         {
-
-            // this is the Client Creater - it's used for the EC
-            /*
             MasterToClient clientMaker = new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
-                    masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs, finishedJobs,
-                    unfinishedJob_LOCK, finishedJob_LOCK, isDone);
+                    masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
+                    finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone);
+
+            //MasterSendingThreadToClient mtc = new MasterSendingThreadToClient(, isDone, finishedJobs, finishedJob_LOCK);
+            //MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient();
+
 
             System.out.println("Master to Client thread created");
-             */
 
-            // create client
-            masterReceivingThreadFromClient.add(new MasterReceivingThreadFromClient(clientSocket, isDone, unfinishedJobs, unfinishedJob_LOCK));
-            masterSendingThreadToClient.add(new MasterSendingThreadToClient(clientSocket, isDone, finishedJobs, finishedJob_LOCK));
-
-            for (Thread t : masterReceivingThreadFromClient)
-                t.start();
-
-            for (Thread t : masterSendingThreadToClient)
-                t.start();
+            slaveA = slaveSocket1;
+            slaveB = slaveSocket2;
 
 
-            // properly assign slaveA and slaveB
             /*
+            // properly assign slaveA and slaveB
             Job announcement1 = (Job) objectInputStreamSlave1.readObject();
             Job announcement2 = (Job) objectInputStreamSlave2.readObject(); // unused, to get rid of the type announcement job
             if ((announcement1.getStatus().equals(JobStatuses.IS_SLAVE_A)))
@@ -128,13 +121,8 @@ public class Master
                 slaveA = slaveSocket2;
                 slaveB = slaveSocket1;
                 System.out.println("Slave A = socket2, slave B = socket1");
-
             }
-
              */
-            slaveA = slaveSocket1;
-            slaveB = slaveSocket2;
-
             System.out.println("Slaves were assigned.");
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave (slaveA, isDone,
                     finishedJobs, finishedJob_LOCK);
@@ -143,7 +131,7 @@ public class Master
 
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
-            // clientMaker.start(); // WE FORGOT TO DO THIS
+            clientMaker.start(); // WE FORGOT TO DO THIS
 
             MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                         timeTrackerB, unfinishedJobs, unfinishedJob_LOCK, isDone);
@@ -163,19 +151,14 @@ public class Master
             {
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
-                //clientMaker.join(); // WE FORGOT TO DO THIS
-                for (Thread t : masterReceivingThreadFromClient)
-                    t.join();
-
-                for (Thread t : masterSendingThreadToClient)
-                    t.join();
+                clientMaker.join(); // WE FORGOT TO DO THIS
 
                 sThread.join();
 
             }
             catch (Exception e)
             {
-                System.out.println(e.getMessage());
+                System.out.println("Master!!!!" + e.getMessage());
             }
 
 
