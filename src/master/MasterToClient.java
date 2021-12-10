@@ -63,8 +63,9 @@ public class MasterToClient extends Thread
 
                 synchronized (masterSendingThreadToClient_LOCK)
                 {
+                    int clientNumber = masterSendingThreadToClient.size() + 1;
                     MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
-                            clientSocket, done, finishedJobs, finishedJob_LOCK);
+                            clientSocket, done, finishedJobs, finishedJob_LOCK, clientNumber);
                     masterSendingThreadToClient.add(msc);
                     msc.start();
                 }

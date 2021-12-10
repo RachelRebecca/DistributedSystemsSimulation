@@ -93,13 +93,18 @@ public class Master
                        // ObjectInputStream objectInputStreamSlave2 = new ObjectInputStream(slaveSocket2.getInputStream())
                 )
         {
-            //two master to client threads
+            /*//two master to client threads
             for (int i = 0; i < 2; i++)
             {
                 masterToClientThreads.add(new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
                         masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
                         finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone));
-            }
+            }*/
+
+            MasterToClient mtc = new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
+                    masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
+                    finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone);
+            masterToClientThreads.add(mtc);
 
             //MasterSendingThreadToClient mtc = new MasterSendingThreadToClient(, isDone, finishedJobs, finishedJob_LOCK);
             //MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient();
