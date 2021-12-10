@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Creates Client
+ * - make a Client Socket, and get the jobs from the User
+ * - start and join Client Threads
+ */
 public class Client
 {
 
@@ -23,10 +28,13 @@ public class Client
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-        int id = Integer.parseInt(args[2]);
+        int jobId = 1;
+        int clientId = Integer.parseInt(args[2]);
 
+        // list of jobs that haven't been sent yet to Master
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
+
         Done done = new Done();
 
         try
@@ -37,12 +45,15 @@ public class Client
                                  new InputStreamReader(System.in))
                 )
         {
+            //each client has exactly one sending thread, and one receiving thread
             ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done);
             ClientReceivingThread receivingThread = new ClientReceivingThread(clientSocket);
 
+            //start threads
             sendingThread.start();
             receivingThread.start();
 
+            //get user job request (either A, B, or 0 to exit)
             label:
             while (true)
             {
@@ -63,7 +74,8 @@ public class Client
                     case "A":
                     case "a":
                     {
-                        Job job = new Job(1, JobTypes.A, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        // create a new A job, add it to the list of unsent jobs
+                        Job job = new Job(clientId, JobTypes.A, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -74,7 +86,8 @@ public class Client
                     case "B":
                     case "b":
                     {
-                        Job job = new Job(1, JobTypes.B, id, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        // create a new B job, add it to the list of unsent jobs
+                        Job job = new Job(clientId, JobTypes.B, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -83,13 +96,14 @@ public class Client
                         break;
                     }
                 }
-                id++;
+                jobId++;
             }
 
             //WHEN MASTER SENDS CLIENT DONE JOB, THEN
             done.setFinished(true);
             System.out.println("Exiting as all jobs are done.");
 
+            // join all threads for the client
             try
             {
                 sendingThread.join();

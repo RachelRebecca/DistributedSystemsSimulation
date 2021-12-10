@@ -6,37 +6,48 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Creates Master
+ * - makes three ServerSockets - for Client, SlaveA, and SlaveB
+ * - starts and joins all threads
+ */
 public class Master
 {
     public static void main(String[] args)
     {
 
         // Hard code in port number if necessary:
-        //args = new String[] {"30121", "30122", "30123"};
+        // args = new String[] {"30121", "30122", "30123"};
 
         if (args.length != 3 || isNotInteger(args[0]) || isNotInteger(args[1]) || isNotInteger(args[2]))
         {
-            System.err.println("Usage: java EchoServer <client port number> <slave a port number> <slave b port number>");
+            System.err.println("Usage: java Master <client port number> <slave a port number> <slave b port number>");
             System.exit(1);
         }
 
-        int portNumber = Integer.parseInt(args[0]);
+        int clientPortNumber = Integer.parseInt(args[0]);
         int slaveAPortNumber = Integer.parseInt(args[1]);
         int slaveBPortNumber = Integer.parseInt(args[2]);
 
         // setup for threads
-        ArrayList<Thread> masterToClientThreads = new ArrayList<>();
 
-        ArrayList<Thread> masterReceivingThreadFromClient = new ArrayList<>();
+        // list of MasterReceivingFromClient and MasterSendingToClient threads
+        // every time MasterToClient creates a new client, one new Receiving and Sending Thread gets added
+        ArrayList<Thread> masterReceivingThreadFromClients = new ArrayList<>();
         Object masterReceivingThreadFromClient_LOCK = new Object();
-        ArrayList<Thread> masterSendingThreadToClient = new ArrayList<>();
+        ArrayList<Thread> masterSendingThreadToClients = new ArrayList<>();
         Object masterSendingThreadToClient_LOCK = new Object();
 
+        // list of unfinished jobs that gets filled by the Client - unfinished jobs are sent to the Slaves
         ArrayList<Job> unfinishedJobs = new ArrayList<>();
-        ArrayList<Job> finishedJobs = new ArrayList<>();
         Object unfinishedJob_LOCK = new Object();
+
+        // list of finished jobs that gets filled by the Slaves - finished jobs are sent to the Client
+        ArrayList<Job> finishedJobs = new ArrayList<>();
         Object finishedJob_LOCK = new Object();
 
+        // TimeTracker objects - one for SlaveA and one for SlaveB,
+        // storing the current total time each slave will need to complete all its jobs
         TimeTrackerForSlave timeTrackerA = new TimeTrackerForSlave(SlaveTypes.A);
         TimeTrackerForSlave timeTrackerB = new TimeTrackerForSlave(SlaveTypes.B);
         Object timeTracker_LOCK = new Object();
@@ -48,8 +59,7 @@ public class Master
 
         try
                 (
-                        // hardcode 2 slaves for regular
-                        ServerSocket serverSocket = new ServerSocket(portNumber);
+                        ServerSocket serverSocket = new ServerSocket(clientPortNumber);
 
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
                         Socket slaveSocket1 = slaveServerSocket1.accept();
@@ -58,14 +68,18 @@ public class Master
                         Socket slaveSocket2 = slaveServerSocket2.accept()
                 )
         {
-            MasterToClient mtc = new MasterToClient(masterReceivingThreadFromClient, masterReceivingThreadFromClient_LOCK,
-                    masterSendingThreadToClient, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
-                    finishedJobs, unfinishedJob_LOCK, finishedJob_LOCK, isDone);
-            masterToClientThreads.add(mtc);
+            // create and start a MasterToClient thread, which constantly accepts incoming Clients
+            // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
+            MasterToClient mtc = new MasterToClient(masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
+                    masterSendingThreadToClients, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
+                    unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone);
+            mtc.start();
 
+            //hardcode 2 slaves -> maybe change for extra credit
             slaveA = slaveSocket1;
             slaveB = slaveSocket2;
 
+            // create and start two different MasterReceivingFromSlave threads (one for SlaveA and one for SlaveB)
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave(slaveA,
                     timeTrackerA, timeTrackerB, timeTracker_LOCK, finishedJobs, finishedJob_LOCK);
             MasterReceivingThreadFromSlave receivingFromSlaveB = new MasterReceivingThreadFromSlave(slaveB,
@@ -74,11 +88,7 @@ public class Master
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
 
-            for (Thread cm : masterToClientThreads)
-            {
-                cm.start();
-            }
-
+            // create and start a MasterSendingToSlave thread
             MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                     timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, isDone);
             sThread.start();
@@ -91,34 +101,22 @@ public class Master
                 }
             }
 
+            //join all threads
             try
             {
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
-
-                for (Thread cm : masterToClientThreads)
-                {
-                    try
-                    {
-                        cm.join();
-                    }
-                    catch (Exception e)
-                    {
-                        System.out.println("Joining client makers: " + e.getMessage());
-                    }
-                }
-
+                mtc.join();
                 sThread.join();
-
             }
             catch (Exception e)
             {
                 System.out.println("Master!!!!" + e.getMessage());
             }
         }
-        catch (Exception e)        // generic exception in case of any issues that arise
+        catch (Exception e)
         {
-            System.out.println("Master IO error: " + e.getMessage());
+            System.out.println("Master error: " + e.getMessage());
         }
     }
 
@@ -134,7 +132,8 @@ public class Master
         try
         {
             Integer.parseInt(arg);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             isInteger = false;
         }

@@ -25,10 +25,8 @@ public class MasterToClient extends Thread
 
     public MasterToClient(ArrayList<Thread> masterReceivingThreadFromClient, Object masterReceivingThreadFromClient_LOCK,
                           ArrayList<Thread> masterSendingThreadToClient, Object masterSendingThreadToClient_LOCK,
-                          ServerSocket serverSocket,
-                          ArrayList<Job> unfinishedJobs, ArrayList<Job> finishedJobs,
-                          Object unfinishedJob_LOCK, Object finishedJob_LOCK,
-                          Done isDone)
+                          ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
+                          ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone)
     {
         this.masterReceivingThreadFromClient = masterReceivingThreadFromClient;
         this.masterReceivingThreadFromClient_LOCK = masterReceivingThreadFromClient_LOCK;
