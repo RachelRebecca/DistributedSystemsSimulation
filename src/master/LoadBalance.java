@@ -49,4 +49,9 @@ public class LoadBalance
 
         return slaveType;
     }
+
+    public static void sendDoneJobAlgorithm()
+    {
+        // TODO: return the slave that will take the longest to complete
+    }
 }

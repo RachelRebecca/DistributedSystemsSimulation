@@ -86,7 +86,9 @@ public class Client
                 id++;
             }
 
+            //WHEN MASTER SENDS CLIENT DONE JOB, THEN
             done.setFinished(true);
+            System.out.println("Exiting as all jobs are done.");
 
             try
             {
