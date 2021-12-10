@@ -92,8 +92,7 @@ public class MasterToClient extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("Entering this try-catch - ALERT!");
-            System.out.println(e.getMessage());
+            System.out.println("MasterToClient outer exception: " + e.getMessage());
         }
     }
 

@@ -21,6 +21,7 @@ public class MasterToSlave extends Thread
     final Object finishedJob_LOCK;
     final TimeTrackerForSlave timeTrackerA;
     final TimeTrackerForSlave timeTrackerB;
+    final Object timeTracker_LOCK;
 
     Socket slaveSocketA;
     Socket slaveSocketB;
@@ -33,7 +34,7 @@ public class MasterToSlave extends Thread
                           ServerSocket serverSocket,
                           ArrayList<Job> unfinishedJobs, ArrayList<Job> finishedJobs,
                           Object unfinishedJob_LOCK, Object finishedJob_LOCK,
-                          TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
+                          TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB, Object timeTracker_LOCK,
                           Socket slaveSocketA, Socket slaveSocketB,
                           Done isDone)
     {
@@ -50,6 +51,7 @@ public class MasterToSlave extends Thread
         this.finishedJob_LOCK = finishedJob_LOCK;
         this.timeTrackerA = timeTrackerA;
         this.timeTrackerB = timeTrackerB;
+        this.timeTracker_LOCK = timeTracker_LOCK;
 
         this.slaveSocketA = slaveSocketA;
         this.slaveSocketB = slaveSocketB;
@@ -68,13 +70,13 @@ public class MasterToSlave extends Thread
                 synchronized (masterReceivingThreadFromSlave_LOCK)
                 {
                     masterReceivingThreadFromSlave.add(new MasterReceivingThreadFromSlave(
-                            slaveSocket, done, finishedJobs, finishedJob_LOCK));
+                            slaveSocket, timeTrackerA, timeTrackerB, timeTracker_LOCK, finishedJobs, finishedJob_LOCK));
                 }
                 synchronized (masterSendingThreadToSlave_LOCK)
                 {
                     masterSendingThreadToSlave.add(new MasterSendingThreadToSlave(
                             slaveSocketA, slaveSocketB,
-                            timeTrackerA, timeTrackerB,
+                            timeTrackerA, timeTrackerB, timeTracker_LOCK,
                             unfinishedJobs, unfinishedJob_LOCK, done));
                 }
             }

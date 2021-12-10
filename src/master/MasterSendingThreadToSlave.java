@@ -12,18 +12,21 @@ public class MasterSendingThreadToSlave extends Thread
     private final Socket slaveB;
     private final TimeTrackerForSlave timeTrackerForSlaveA;
     private final TimeTrackerForSlave timeTrackerForSlaveB;
+    private final Object timeTrackerForSlave_LOCK;
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJobs_LOCK;
     private final Done done;
 
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
                                       TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
+                                      Object timeTrackerForSlave_lock,
                                       ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done isDone)
     {
         slaveA = slaveSocketA;
         slaveB = slaveSocketB;
         timeTrackerForSlaveA = timeTrackerA;
         timeTrackerForSlaveB = timeTrackerB;
+        this.timeTrackerForSlave_LOCK = timeTrackerForSlave_lock;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJobs_LOCK = unfinishedJobs_LOCK;
         done = isDone;
@@ -34,8 +37,7 @@ public class MasterSendingThreadToSlave extends Thread
     {
         try
                 (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
-                ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream())
-                )
+                ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream()))
         {
             while (!done.getIsFinished())
             {
@@ -59,15 +61,23 @@ public class MasterSendingThreadToSlave extends Thread
 
                     SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, currJob);
                     System.out.println("Sending to " + slave.name());
+                    currJob.setSlaveType(slave);
+
                     if (slave.equals(SlaveTypes.A))
                     {
                         objectOutputStreamSlaveA.writeObject(currJob);
-                        updateTimeTracker(currJob, timeTrackerForSlaveA);
+                        synchronized (timeTrackerForSlave_LOCK)
+                        {
+                            updateTimeTracker(currJob, timeTrackerForSlaveA);
+                        }
                     }
                     else
                     {
                         objectOutputStreamSlaveB.writeObject(currJob);
-                        updateTimeTracker(currJob, timeTrackerForSlaveB);
+                        synchronized (timeTrackerForSlave_LOCK)
+                        {
+                            updateTimeTracker(currJob, timeTrackerForSlaveB);
+                        }
                     }
                 }
 

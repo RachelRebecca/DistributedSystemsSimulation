@@ -15,8 +15,6 @@ public class SlaveSendingThread extends Thread
     private boolean isFirstRun = true;
     private SlaveTypes slaveType;
 
-
-    //what goes into the constructor?? <-- Chaya's comment :)
     public SlaveSendingThread(Socket socket, ArrayList<Job> jobsCompleted, Object completedJob_LOCK, Done finished, SlaveTypes slaveType)
     {
         slaveSocket = socket;

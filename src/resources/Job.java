@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Job implements Serializable
 {
     private int client;
+    private SlaveTypes slaveType;
     private JobTypes type;
     private int id;
     private JobStatuses status;
@@ -15,6 +16,7 @@ public class Job implements Serializable
         type = jobType;
         id = Id;
         status = jobStatus;
+        slaveType = SlaveTypes.NULL;
     }
 
     public int getClient()
@@ -37,6 +39,11 @@ public class Job implements Serializable
         return status;
     }
 
+    public SlaveTypes getSlaveType()
+    {
+        return slaveType;
+    }
+
     public void setClient(int clientNumber)
     {
         client = clientNumber;
@@ -57,8 +64,9 @@ public class Job implements Serializable
         status = jobStatus;
     }
 
-    public void incrementId()
+    public void setSlaveType(SlaveTypes st)
     {
-        this.id++;
+        slaveType = st;
     }
+
 }

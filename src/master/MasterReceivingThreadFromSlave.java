@@ -1,8 +1,6 @@
 package master;
 
-import resources.Done;
-import resources.Job;
-import resources.JobStatuses;
+import resources.*;
 
 import java.io.ObjectInputStream;
 import java.net.Socket;
@@ -11,17 +9,23 @@ import java.util.ArrayList;
 public class MasterReceivingThreadFromSlave extends Thread
 {
     private final Socket slaveSocket;
-    private final Done done;
+    private final TimeTrackerForSlave timeTrackerForSlaveA;
+    private final TimeTrackerForSlave timeTrackerForSlaveB;
+    private final Object timeTracker_LOCK;
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
 
 
-    public MasterReceivingThreadFromSlave(Socket slaveSocket, Done done, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK)
+    public MasterReceivingThreadFromSlave(Socket slaveSocket, TimeTrackerForSlave timeTrackerForSlaveA,
+                                          TimeTrackerForSlave timeTrackerForSlaveB, Object timeTracker_LOCK,
+                                          ArrayList<Job> finishedJobs, Object finishedJobs_LOCK)
     {
         this.slaveSocket = slaveSocket;
         this.finishedJobs = finishedJobs;
+        this.timeTrackerForSlaveA = timeTrackerForSlaveA;
+        this.timeTrackerForSlaveB = timeTrackerForSlaveB;
+        this.timeTracker_LOCK = timeTracker_LOCK;
         this.finishedJobs_LOCK = finishedJobs_LOCK;
-        this.done = done;
     }
 
     @Override
@@ -40,25 +44,36 @@ public class MasterReceivingThreadFromSlave extends Thread
                     {
                         finishedJobs.add(receivedJob);
                     }
-                    System.out.println("Got a completed job from slave: " + receivedJob.getType() + receivedJob.getId());
+
+                    TimeTrackerForSlave tempTracker = (receivedJob.getSlaveType().equals(SlaveTypes.A)) ?
+                            timeTrackerForSlaveA : timeTrackerForSlaveB;
+
+                    synchronized (timeTracker_LOCK)
+                    {
+                        updateTimeTracker(receivedJob, tempTracker);
+                    }
+
+                    System.out.println("Got a completed job from slave: " + receivedJob.getClient() + "." +
+                            receivedJob.getType() + receivedJob.getId());
                 }
-
-                /*else if (receivedJob.getStatus().equals(JobStatuses.IS_SLAVE_A))
-                {
-                    System.out.println("Received slave a announcement");
-                }
-
-
-                else if (receivedJob.getStatus().equals(JobStatuses.IS_SLAVE_B))
-                {
-                    System.out.println("Received slave b announcement");
-                }*/
             }
-
-
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             System.out.println("Master receiving to slave error: " + e.getMessage());
+        }
+
+    }
+
+    public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
+    {
+        if (currJob.getType().equals(JobTypes.A))
+        {
+            timeTrackerForSlave.removeA();
+        }
+        else
+        {
+            timeTrackerForSlave.removeB();
         }
     }
 }

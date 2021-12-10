@@ -9,11 +9,11 @@ import java.util.Arrays;
 
 public class MasterSendingThreadToClient extends Thread
 {
-    private Socket clientSocket;
-    private ArrayList<Job> finishedJobs;
+    private final Socket clientSocket;
+    private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
-    private Done done;
-    private int clientNumber;
+    private final Done done; // TODO: final?
+    private final int clientNumber;
 
     public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK, int clientNumber)
     {
@@ -50,22 +50,10 @@ public class MasterSendingThreadToClient extends Thread
 
                if (finishedJobsSize > 0 && currJob != null)
                {
-//                   synchronized (finishedJobs_LOCK)
-//                   {
-//                       currJob = finishedJobs.get(0);
-//                   }
-
                    //send finished job to client
                    currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
                    requestWriter.writeObject(currJob);
-
-//                   synchronized (finishedJobs_LOCK)
-//                   {
-//                       finishedJobs.remove(0);
-//                       System.out.println(currJob.getType() + "" + currJob.getId()  + " was sent to client");
-//                   }
-
-                   System.out.println(currJob.getType() + "" + currJob.getId()  + " was sent to client");
+                   System.out.println(currJob.getType() + "" + currJob.getId()  + " was sent to client " + currJob.getClient());
                }
 
                if (done.getIsFinished())

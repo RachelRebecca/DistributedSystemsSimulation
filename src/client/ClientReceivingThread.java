@@ -4,7 +4,6 @@ import resources.*;
 
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class ClientReceivingThread extends Thread
 {
@@ -25,7 +24,6 @@ public class ClientReceivingThread extends Thread
             Job serverMessage;
             while ((serverMessage = (Job) objectInputStream.readObject()) != null)
             {
-                // output message
                 System.out.println("job " + serverMessage.getType() + serverMessage.getId() + " was finished.");
             }
         }

@@ -58,9 +58,6 @@ public class Slave
             receivingThread.start();
             doJobThread.start();
 
-//            Thread.sleep(10000);
-//            done.setFinished(true);
-
             try
             {
                 doJobThread.join();
@@ -69,14 +66,12 @@ public class Slave
             }
             catch (Exception e)
             {
-                System.out.println("In inner exception");
-//                System.out.println(e.getMessage());
+                System.out.println("In inner exception" + e.getMessage());
             }
         }
         catch (Exception e)
         {
-            System.out.println("In outer exception");
-//            System.out.println(e.getMessage());
+            System.out.println("In outer exception" + e.getMessage());
         }
     }
 

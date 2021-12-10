@@ -38,7 +38,7 @@ public class MasterReceivingThreadFromClient extends Thread
                     {
                         unfinishedJobs.add(receivedJob);
                     }
-                    System.out.println("Got a job from client: " + receivedJob.getType() + receivedJob.getId());
+                    System.out.println("Got a job from client: " + receivedJob.getClient() + "." + receivedJob.getType() + receivedJob.getId());
                 }
             }
         }
