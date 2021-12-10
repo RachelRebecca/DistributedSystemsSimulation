@@ -42,7 +42,7 @@ public class Slave
 
         setABTime(slaveType);
 
-        System.out.println("Slave" + slaveType + "portNumber: " + portNumber);
+        System.out.println("Slave " + slaveType + " portNumber: " + portNumber);
 
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {

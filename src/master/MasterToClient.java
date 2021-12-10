@@ -84,7 +84,7 @@ public class MasterToClient extends Thread
                         }
                     } catch (Exception e)
                     {
-                        System.out.println("MasterToClient joining catch" + e.getMessage());
+                        System.out.println("MasterToClient joining catch: " + e.getMessage());
                     }
                 }
             }
