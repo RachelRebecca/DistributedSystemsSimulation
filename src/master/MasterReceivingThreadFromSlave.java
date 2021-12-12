@@ -6,6 +6,10 @@ import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Master receives finished jobs from the Slaves using that slave's specific slave socket
+ * Adds finished jobs to shared memory
+ */
 public class MasterReceivingThreadFromSlave extends Thread
 {
     private final Socket slaveSocket;
@@ -34,20 +38,25 @@ public class MasterReceivingThreadFromSlave extends Thread
         try (// stream to read object response from server
              ObjectInputStream objectInputStream = new ObjectInputStream(slaveSocket.getInputStream()))
         {
-            Job receivedJob;
+            Job receivedJob; // fill with jobs sent to Master from the Slave
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
             {
                 if (receivedJob.getStatus() == JobStatuses.FINISHED_SEND_TO_MASTER)
                 {
+                    //update job status
                     receivedJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
+
+                    //add the job to the list of finished jobs that need to be sent to the Client
                     synchronized (finishedJobs_LOCK)
                     {
                         finishedJobs.add(receivedJob);
                     }
 
+                    //set the temporary TimeTracker object as whichever slave sent the completed job
                     TimeTrackerForSlave tempTracker = (receivedJob.getSlaveType().equals(SlaveTypes.A)) ?
                             timeTrackerForSlaveA : timeTrackerForSlaveB;
 
+                    // remove the job time of the completed job specific to that slave
                     synchronized (timeTracker_LOCK)
                     {
                         updateTimeTracker(receivedJob, tempTracker);
@@ -65,6 +74,11 @@ public class MasterReceivingThreadFromSlave extends Thread
 
     }
 
+    /**
+     * Removes the time on the selected slave for the completed job
+     * @param currJob - the current, finished job to be removed from the total work time the slave currently has
+     * @param timeTrackerForSlave - the TimeTrackerForSlave object for the specific slave who completed the job
+     */
     public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
     {
         if (currJob.getType().equals(JobTypes.A))

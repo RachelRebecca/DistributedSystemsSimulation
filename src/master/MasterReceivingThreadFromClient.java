@@ -38,6 +38,8 @@ public class MasterReceivingThreadFromClient extends Thread
             {
                 if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
+
+                    //update job status
                     receivedJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
 
                     // add the job to the list of unfinished jobs
