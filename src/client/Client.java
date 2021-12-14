@@ -35,6 +35,9 @@ public class Client
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
 
+        ArrayList<Job> unfinishedList = new ArrayList<>();
+        Object unfinishedList_LOCK = new Object();
+
         Done done = new Done();
 
         try
@@ -46,8 +49,9 @@ public class Client
                 )
         {
             //each client has exactly one sending thread, and one receiving thread
-            ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK, done);
-            ClientReceivingThread receivingThread = new ClientReceivingThread(clientSocket);
+            ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
+                    unfinishedList, unfinishedList_LOCK, done);
+            ClientReceivingThread receivingThread = new ClientReceivingThread(clientSocket, unfinishedList, unfinishedList_LOCK);
 
             //start threads
             sendingThread.start();
@@ -101,7 +105,24 @@ public class Client
 
             //WHEN MASTER SENDS CLIENT DONE JOB, THEN
             done.setFinished(true);
-            System.out.println("Exiting as all jobs are done.");
+            System.out.println("Thank you. We will exit when all your jobs are done.");
+
+            /*// send a done job
+            Job job = new Job(clientId, JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
+            synchronized (unsentList_LOCK)
+            {
+                unsentList.add(job);
+            }*/
+
+            int size;
+            do
+            {
+                synchronized (unfinishedList_LOCK)
+                {
+                    size =  unfinishedList.size();
+                }
+            }
+            while (size > 0);
 
             // join all threads for the client
             try

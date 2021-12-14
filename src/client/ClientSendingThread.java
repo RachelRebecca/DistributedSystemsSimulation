@@ -17,14 +17,19 @@ public class ClientSendingThread extends Thread
     //list of jobs that haven't yet been sent to Master (shared memory)
     private final ArrayList<Job> unsentList;
     private final Object unsent_LOCK;
+    private final ArrayList<Job> unfinishedList;
+    private final Object unfinished_LOCK;
 
     private final Done done;
 
-    public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK, Done isDone)
+    public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,
+                               ArrayList<Job> unfinishedList, Object unfinished_LOCK, Done isDone)
     {
         this.clientSocket = clientSocket;
         this.unsentList = unsentList;
         this.unsent_LOCK = unsent_LOCK;
+        this.unfinishedList = unfinishedList;
+        this.unfinished_LOCK = unfinished_LOCK;
         this.done = isDone;
     }
 
@@ -57,6 +62,11 @@ public class ClientSendingThread extends Thread
 
                     // send the job to the Master
                     requestWriter.writeObject(currJob);
+
+                    synchronized (unfinished_LOCK)
+                    {
+                        unfinishedList.add(currJob);
+                    }
                 }
 
                 if (done.getIsFinished())

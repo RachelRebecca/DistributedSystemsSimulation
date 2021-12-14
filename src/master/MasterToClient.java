@@ -22,6 +22,8 @@ public class MasterToClient extends Thread
 
     final Done done;
 
+    ArrayList<Socket> clientSockets = new ArrayList<>();
+
 
     public MasterToClient(ArrayList<Thread> masterReceivingThreadFromClient, Object masterReceivingThreadFromClient_LOCK,
                           ArrayList<Thread> masterSendingThreadToClient, Object masterSendingThreadToClient_LOCK,
@@ -50,18 +52,19 @@ public class MasterToClient extends Thread
             while (!done.getIsFinished())
             {
                 Socket clientSocket = serverSocket.accept();
+                clientSockets.add(clientSocket);
+                int clientNumber = clientSockets.size();
 
                 synchronized (masterReceivingThreadFromClient_LOCK)
                 {
                     MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
-                            clientSocket, done, unfinishedJobs, unfinishedJob_LOCK);
+                            clientSocket, done, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
                     masterReceivingThreadFromClient.add(mrc);
                     mrc.start();
                 }
 
                 synchronized (masterSendingThreadToClient_LOCK)
                 {
-                    int clientNumber = masterSendingThreadToClient.size() + 1;
                     MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
                             clientSocket, done, finishedJobs, finishedJob_LOCK, clientNumber);
                     masterSendingThreadToClient.add(msc);

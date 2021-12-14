@@ -59,7 +59,8 @@ public class MasterSendingThreadToSlave extends Thread
                         unfinishedJobs.remove(0);
                     }
 
-                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, currJob);
+                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, timeTrackerForSlave_LOCK,
+                            currJob);
                     System.out.println("Sending to " + slave.name());
                     currJob.setSlaveType(slave);
 

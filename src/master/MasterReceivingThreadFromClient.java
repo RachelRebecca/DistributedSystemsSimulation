@@ -16,14 +16,17 @@ public class MasterReceivingThreadFromClient extends Thread
     private final Done done;
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJob_LOCK;
+    private int clientNumber;
 
 
-    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK)
+    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
+                                           int clientNumber)
     {
         this.clientSocket = clientSocket;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.done = done;
+        this.clientNumber = clientNumber;
     }
 
     @Override
