@@ -56,6 +56,7 @@ public class Master
         Socket slaveB;
 
         Done isDone = new Done();
+        Object done_LOCK = new Object();
 
         try
                 (
@@ -72,7 +73,7 @@ public class Master
             // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
             MasterToClient mtc = new MasterToClient(masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
                     masterSendingThreadToClients, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
-                    unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone);
+                    unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
             mtc.start();
 
             //hardcode 2 slaves -> maybe change for extra credit
@@ -95,7 +96,7 @@ public class Master
 
             while (!isDone.getIsFinished())
             {
-                if (isDone.getIsFinished())
+                if (isDone.getClientNumber() == 0)
                 {
                     isDone.setFinished(true);
                 }

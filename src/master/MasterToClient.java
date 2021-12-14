@@ -21,6 +21,7 @@ public class MasterToClient extends Thread
     final Object finishedJob_LOCK;
 
     final Done done;
+    Object done_LOCK;
 
     ArrayList<Socket> clientSockets = new ArrayList<>();
 
@@ -28,7 +29,7 @@ public class MasterToClient extends Thread
     public MasterToClient(ArrayList<Thread> masterReceivingThreadFromClient, Object masterReceivingThreadFromClient_LOCK,
                           ArrayList<Thread> masterSendingThreadToClient, Object masterSendingThreadToClient_LOCK,
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
-                          ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone)
+                          ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone, Object done_LOCK)
     {
         this.masterReceivingThreadFromClient = masterReceivingThreadFromClient;
         this.masterReceivingThreadFromClient_LOCK = masterReceivingThreadFromClient_LOCK;
@@ -43,6 +44,7 @@ public class MasterToClient extends Thread
         this.finishedJob_LOCK = finishedJob_LOCK;
 
         done = isDone;
+        this.done_LOCK = done_LOCK;
     }
 
     public void run()
@@ -55,10 +57,15 @@ public class MasterToClient extends Thread
                 clientSockets.add(clientSocket);
                 int clientNumber = clientSockets.size();
 
+                synchronized (done_LOCK)
+                {
+                    done.addClient();
+                }
+
                 synchronized (masterReceivingThreadFromClient_LOCK)
                 {
                     MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
-                            clientSocket, done, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
+                            clientSocket, done, done_LOCK, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
                     masterReceivingThreadFromClient.add(mrc);
                     mrc.start();
                 }
