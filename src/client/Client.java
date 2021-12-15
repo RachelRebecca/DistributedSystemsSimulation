@@ -116,6 +116,8 @@ public class Client
             int size;
             do
             {
+                Thread.sleep(1000);
+
                 synchronized (unfinishedList_LOCK)
                 {
                     size =  unfinishedList.size();
