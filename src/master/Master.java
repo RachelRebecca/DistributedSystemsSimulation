@@ -33,10 +33,10 @@ public class Master
 
         // list of MasterReceivingFromClient and MasterSendingToClient threads
         // every time MasterToClient creates a new client, one new Receiving and Sending Thread gets added
-        ArrayList<Thread> masterReceivingThreadFromClients = new ArrayList<>();
+        /*ArrayList<Thread> masterReceivingThreadFromClients = new ArrayList<>();
         Object masterReceivingThreadFromClient_LOCK = new Object();
         ArrayList<Thread> masterSendingThreadToClients = new ArrayList<>();
-        Object masterSendingThreadToClient_LOCK = new Object();
+        Object masterSendingThreadToClient_LOCK = new Object();*/
 
         // list of unfinished jobs that gets filled by the Client - unfinished jobs are sent to the Slaves
         ArrayList<Job> unfinishedJobs = new ArrayList<>();
@@ -71,8 +71,8 @@ public class Master
         {
             // create and start a MasterToClient thread, which constantly accepts incoming Clients
             // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
-            MasterToClient mtc = new MasterToClient(masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
-                    masterSendingThreadToClients, masterSendingThreadToClient_LOCK, serverSocket, unfinishedJobs,
+            MasterToClient mtc = new MasterToClient(/*masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
+                    masterSendingThreadToClients, masterSendingThreadToClient_LOCK, */serverSocket, unfinishedJobs,
                     unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
             mtc.start();
 

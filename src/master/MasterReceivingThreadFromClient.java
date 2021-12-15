@@ -47,6 +47,7 @@ public class MasterReceivingThreadFromClient extends Thread
                     synchronized (done_LOCK)
                     {
                         done.removeClient();
+                        // add my client number to the clientToClose arrayList
                     }
                 }
                 else if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
