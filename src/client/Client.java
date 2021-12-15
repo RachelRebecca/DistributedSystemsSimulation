@@ -104,7 +104,7 @@ public class Client
             }
 
             //WHEN MASTER SENDS CLIENT DONE JOB, THEN
-            done.setFinished(true);
+            //done.setFinished(true);
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
             // send a done job
