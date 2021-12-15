@@ -120,11 +120,14 @@ public class Client
             }
             while (size > 0);
 
+            System.out.println("reached this point");
             // join all threads for the client
             try
             {
                 sendingThread.join();
+                System.out.println("closed sending thread");
                 receivingThread.join();
+                System.out.println("closed receiving thread");
             }
             catch (Exception e)
             {
