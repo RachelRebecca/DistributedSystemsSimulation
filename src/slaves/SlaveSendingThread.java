@@ -92,7 +92,7 @@ public class SlaveSendingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("Something terrible happened" + e.getMessage());
+            System.out.println("Something terrible happened: " + e.getMessage());
         }
 
     }
