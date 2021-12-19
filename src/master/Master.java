@@ -52,6 +52,14 @@ public class Master
         TimeTrackerForSlave timeTrackerB = new TimeTrackerForSlave(SlaveTypes.B);
         Object timeTracker_LOCK = new Object();
 
+        //ID TRACKER - gets passed into each call to MasterToSlave (2 of these, one for A, one for B)
+        IDTracker idTracker = new IDTracker();
+        Object idTracker_LOCK = new Object();
+
+
+        ArrayList<Socket> slaveSockets = new ArrayList<>();
+        Object slaveSockets_LOCK = new Object();
+
         Socket slaveA;
         Socket slaveB;
 
@@ -76,6 +84,10 @@ public class Master
                     unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
             mtc.start();
 
+
+            MasterToSlave slaveAMaker = new MasterToSlave();
+            MasterToSlave slaveBMaker = new MasterToSlave();
+
             //hardcode 2 slaves -> maybe change for extra credit
             slaveA = slaveSocket1;
             slaveB = slaveSocket2;
@@ -91,7 +103,7 @@ public class Master
 
             // create and start a MasterSendingToSlave thread
             MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
-                    timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, isDone);
+                    timeTrackerB, timeTracker_LOCK, slaveId, unfinishedJobs, unfinishedJob_LOCK, isDone);
             sThread.start();
 
             while (!isDone.getIsFinished())

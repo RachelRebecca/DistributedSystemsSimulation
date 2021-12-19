@@ -17,19 +17,34 @@ public class MasterSendingThreadToSlave extends Thread
     private final Object unfinishedJobs_LOCK;
     private final Done done;
 
-    public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
-                                      TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
-                                      Object timeTrackerForSlave_lock,
+    private int slaveId;
+    private SlaveTypes myType;
+
+    private ArrayList<Socket> slaveSockets;
+    private final Object slaveSockets_LOCK;
+
+    public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,  ArrayList<Socket> slaveSockets,
+                                      Object slaveSockets_LOCK, TimeTrackerForSlave timeTrackerA,
+                                      TimeTrackerForSlave timeTrackerB,
+                                      Object timeTrackerForSlave_lock, /*int slaveId, SlaveTypes myType,*/
                                       ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done isDone)
     {
         slaveA = slaveSocketA;
         slaveB = slaveSocketB;
+        this.slaveSockets = slaveSockets;
+        this.slaveSockets_LOCK = slaveSockets_LOCK;
+
         timeTrackerForSlaveA = timeTrackerA;
         timeTrackerForSlaveB = timeTrackerB;
         this.timeTrackerForSlave_LOCK = timeTrackerForSlave_lock;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJobs_LOCK = unfinishedJobs_LOCK;
         done = isDone;
+
+        /*
+        this.slaveId = slaveId;
+        this.myType = myType;
+         */
     }
 
     @Override
@@ -41,6 +56,14 @@ public class MasterSendingThreadToSlave extends Thread
         {
             while (!done.getIsFinished())
             {
+                /*
+                int slaveNumber;
+                synchronized (slaveSockets_LOCK)
+                {
+                    slaveNumber = slaveSockets.size() - 1;
+                }
+                 */
+
                 // check if there is a job to send
                 Job currJob;
                 int unsentSize;
@@ -59,11 +82,12 @@ public class MasterSendingThreadToSlave extends Thread
                         unfinishedJobs.remove(0);
                     }
 
-                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, timeTrackerForSlave_LOCK,
+                    int slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, timeTrackerForSlave_LOCK,
                             currJob);
-                    System.out.println("Sending to " + slave.name());
-                    currJob.setSlaveType(slave);
+                    System.out.println("Sending to " + slave/*.name()*/);
+                    //currJob.setSlaveType(slave);
 
+                    /*
                     if (slave.equals(SlaveTypes.A))
                     {
                         objectOutputStreamSlaveA.writeObject(currJob);
@@ -80,6 +104,7 @@ public class MasterSendingThreadToSlave extends Thread
                             updateTimeTracker(currJob, timeTrackerForSlaveB);
                         }
                     }
+                     */
                 }
 
                 if (done.getIsFinished())
