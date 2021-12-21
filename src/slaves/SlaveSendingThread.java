@@ -77,7 +77,7 @@ public class SlaveSendingThread extends Thread
                         myJob = completeJobs.get(0);
                         completeJobs.remove(0);
                     }
-                    System.out.println("Sending a job: " + myJob.getType() + myJob.getId());
+                    System.out.println("Sending a job: " + myJob.getClient() + "." + myJob.getType() + myJob.getId() +"\n");
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
                 }
@@ -92,7 +92,7 @@ public class SlaveSendingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("Something terrible happened: " + e.getMessage());
+            System.out.println();
         }
 
     }

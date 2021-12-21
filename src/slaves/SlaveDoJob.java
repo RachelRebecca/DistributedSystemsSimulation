@@ -41,23 +41,22 @@ public class SlaveDoJob extends Thread
                 }
                 if (length > 0)
                 {
-                    System.out.print("doJob: got a job to do! ");
                     synchronized (jobsToCompleteLock)
                     {
                         myJob = jobsToComplete.get(0);
                         jobsToComplete.remove(0);
                     }
 
-                    System.out.println(myJob.getType() + "" + myJob.getId());
-
                     if (myJob.getType() == JobTypes.A)
                     {
-                        System.out.println("Doing an a sleep");
+                        System.out.println("Doing an A sleep for job " + myJob.getClient() + "." + myJob.getType()
+                                + myJob.getId() + "\n");
                         Thread.sleep(sleepA);
                     }
                     else
                     {
-                        System.out.println("Doing a b sleep");
+                        System.out.println("Doing a B sleep for job " + myJob.getClient() + "." + myJob.getType()
+                                + myJob.getId() + "\n");
                         Thread.sleep(sleepB);
                     }
 

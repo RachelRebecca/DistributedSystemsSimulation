@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Creates Client
+ * - make a Client Socket, and get the jobs from the User
+ * - start and join Client Threads
+ */
 public class Client2
 {
 
@@ -99,15 +104,20 @@ public class Client2
             }
 
             //WHEN MASTER SENDS CLIENT DONE JOB, THEN
-            done.setFinished(true);
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
             // send a done job
             Job job = new Job(clientId, JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
+            synchronized (unsentList_LOCK)
+            {
+                unsentList.add(job);
+            }
 
             int size;
             do
             {
+                Thread.sleep(1000);
+
                 synchronized (unfinishedList_LOCK)
                 {
                     size =  unfinishedList.size();
@@ -115,6 +125,7 @@ public class Client2
             }
             while (size > 0);
 
+            done.setFinished(true);
             // join all threads for the client
             try
             {
@@ -129,7 +140,7 @@ public class Client2
         }
         catch (Exception e)
         {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

@@ -55,13 +55,13 @@ public class MasterSendingThreadToSlave extends Thread
                     synchronized (unfinishedJobs_LOCK)
                     {
                         currJob = unfinishedJobs.get(0);
-                        System.out.println("current job [from master sending] is " + currJob.getType() + currJob.getId());
                         unfinishedJobs.remove(0);
                     }
 
                     SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, timeTrackerForSlave_LOCK,
                             currJob);
-                    System.out.println("Sending to " + slave.name());
+                    System.out.println("Sending job " + currJob.getClient() + "." + currJob.getType() + currJob.getId()
+                            + " to Slave " + slave.name() + "\n");
                     currJob.setSlaveType(slave);
 
                     if (slave.equals(SlaveTypes.A))
@@ -90,7 +90,7 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("Master sending to slave error: " + e.getMessage());
+            System.out.println();
         }
     }
 
