@@ -69,7 +69,7 @@ public class MasterReceivingThreadFromSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println();
+            System.out.print("");
         }
 
     }

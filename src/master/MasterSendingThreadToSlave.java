@@ -90,7 +90,7 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println();
+            System.out.print("");
         }
     }
 

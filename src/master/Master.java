@@ -112,12 +112,12 @@ public class Master
             }
             catch (Exception e)
             {
-                System.out.println("Master!!!!" + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         catch (Exception e)
         {
-            System.out.println("Master error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

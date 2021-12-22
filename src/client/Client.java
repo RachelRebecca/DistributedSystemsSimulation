@@ -144,7 +144,6 @@ public class Client
         }
     }
 
-
     /**
      * Check if arg is an integer
      * @param arg (String)
