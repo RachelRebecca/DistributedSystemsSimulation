@@ -61,16 +61,14 @@ public class MasterReceivingThreadFromClient extends Thread
                     {
                         unfinishedJobs.add(receivedJob);
                     }
-                    System.out.println("Got a job from client: " + receivedJob.getClient() + "." + receivedJob.getType() + receivedJob.getId());
+                    System.out.println("Got a job from client: " + receivedJob.getClient() + "." + receivedJob.getType()
+                            + receivedJob.getId() + "\n");
                 }
             }
-
-            System.out.println("Got a null job!");
         }
         catch (Exception e)
         {
-            System.out.println("Master receiving thread from client error: " + e.getMessage());
-            System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.print("");
         }
     }
 }

@@ -104,15 +104,20 @@ public class Client3
             }
 
             //WHEN MASTER SENDS CLIENT DONE JOB, THEN
-            done.setFinished(true);
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
             // send a done job
             Job job = new Job(clientId, JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
+            synchronized (unsentList_LOCK)
+            {
+                unsentList.add(job);
+            }
 
             int size;
             do
             {
+                Thread.sleep(1000);
+
                 synchronized (unfinishedList_LOCK)
                 {
                     size =  unfinishedList.size();
@@ -120,6 +125,7 @@ public class Client3
             }
             while (size > 0);
 
+            done.setFinished(true);
             // join all threads for the client
             try
             {
@@ -134,7 +140,7 @@ public class Client3
         }
         catch (Exception e)
         {
-            System.out.println("Error: " + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

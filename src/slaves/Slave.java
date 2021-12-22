@@ -9,7 +9,7 @@ public class Slave
 {
 
     // IP address = "127.0.0.1"
-    // port = 30122
+    // port = 30122 for A, 30123 for B
 
     private static int aTime;
     private static int bTime;
@@ -66,12 +66,12 @@ public class Slave
             }
             catch (Exception e)
             {
-                System.out.println("In inner exception" + e.getMessage());
+                System.out.println(e.getMessage());
             }
         }
         catch (Exception e)
         {
-            System.out.println("In outer exception" + e.getMessage());
+            System.out.println(e.getMessage());
         }
     }
 

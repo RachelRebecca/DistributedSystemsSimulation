@@ -63,13 +63,13 @@ public class MasterReceivingThreadFromSlave extends Thread
                     }
 
                     System.out.println("Got a completed job from slave: " + receivedJob.getClient() + "." +
-                            receivedJob.getType() + receivedJob.getId());
+                            receivedJob.getType() + receivedJob.getId() + "\n");
                 }
             }
         }
         catch (Exception e)
         {
-            System.out.println("Master receiving to slave error: " + e.getMessage());
+            System.out.print("");
         }
 
     }
