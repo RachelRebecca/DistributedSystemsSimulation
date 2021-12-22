@@ -42,7 +42,7 @@ public class SlaveReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println();
+            System.out.print("");
         }
     }
 }

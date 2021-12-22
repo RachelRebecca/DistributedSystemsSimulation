@@ -53,7 +53,7 @@ public class ClientReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println();
+            System.out.print("");
         }
     }
 }
