@@ -62,14 +62,14 @@ public class MasterReceivingThreadFromSlave extends Thread
                         updateTimeTracker(receivedJob, tempTracker);
                     }
 
-                    System.out.println("Got a completed job from slave: " + receivedJob.getClient() + "." +
-                            receivedJob.getType() + receivedJob.getId() + "\n");
+                    System.out.println("Got a completed job from Slave " + receivedJob.getSlaveType() + ": "
+                            + receivedJob.getClient() + "." + receivedJob.getType() + receivedJob.getId() + "\n");
                 }
             }
         }
         catch (Exception e)
         {
-            System.out.print("");
+            System.out.println("Detected Slave exit.");
         }
 
     }
