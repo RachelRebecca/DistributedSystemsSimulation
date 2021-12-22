@@ -30,6 +30,7 @@ public class MasterSendingThreadToClient extends Thread
        try (ObjectOutputStream requestWriter = // stream to write text requests to server
             new ObjectOutputStream(clientSocket.getOutputStream()))
        {
+           System.out.println();
            while (!done.getIsFinished())
            {
                Job currJob = null;
