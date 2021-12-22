@@ -53,8 +53,8 @@ public class MasterSendingThreadToClient extends Thread
                    //send finished job to client
                    currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
                    requestWriter.writeObject(currJob);
-                   System.out.println(currJob.getType() + "" + currJob.getId()  + " was sent to client " +
-                           currJob.getClient() + "\n");
+                   System.out.println("Finished job " + currJob.getClient() + "." + currJob.getType() + "" + currJob.getId()
+                           + " was sent to Client " + currJob.getClient() + ".\n");
                }
 
                if (done.getIsFinished())
@@ -65,7 +65,7 @@ public class MasterSendingThreadToClient extends Thread
        }
        catch (Exception e)
        {
-           System.out.print("");
+           System.out.println("Detected Client exit.");
        }
     }
 }

@@ -80,7 +80,7 @@ public class ClientSendingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.print("");
+            System.out.println("No longer connected to Master.");
         }
     }
 }

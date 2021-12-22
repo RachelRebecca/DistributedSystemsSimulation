@@ -53,7 +53,7 @@ public class ClientReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.print("");
+            System.out.println("No longer connected to Master.");
         }
     }
 }

@@ -61,14 +61,14 @@ public class MasterReceivingThreadFromClient extends Thread
                     {
                         unfinishedJobs.add(receivedJob);
                     }
-                    System.out.println("Got a job from client: " + receivedJob.getClient() + "." + receivedJob.getType()
-                            + receivedJob.getId() + "\n");
+                    System.out.println("Got a job from Client " + receivedJob.getClient() + ": "
+                            + receivedJob.getClient() + "." + receivedJob.getType() + receivedJob.getId() + "\n");
                 }
             }
         }
         catch (Exception e)
         {
-            System.out.print("");
+            System.out.println("Detected Client exit.");
         }
     }
 }
