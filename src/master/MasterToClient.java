@@ -42,7 +42,7 @@ public class MasterToClient extends Thread
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
-                          ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone, Object done_LOCK)
+                          ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done done, Object done_LOCK)
     {
         this.clientSockets = clientSockets;
         this.clientSockets_LOCK = clientSockets_LOCK;
@@ -55,7 +55,7 @@ public class MasterToClient extends Thread
         masterReceivingThreadFromClient = new ArrayList<>();
         masterSendingThreadToClient = new ArrayList<>();
 
-        done = isDone;
+        this.done = done;
         this.done_LOCK = done_LOCK;
         clientsToClose = new ArrayList<>();
         clientsToClose_LOCK = new Object();
@@ -65,7 +65,7 @@ public class MasterToClient extends Thread
     {
         try
         {
-            while (!done.getIsFinished())
+            while (!done.isFinished())
             {
                 // accept a new client Socket
                 Socket clientSocket = serverSocket.accept();
@@ -118,7 +118,7 @@ public class MasterToClient extends Thread
                     // close the relevant sending and receiving threads - NOT the client socket
                     // remove that client number from the arrayList
 
-                if (done.getIsFinished())
+                if (done.isFinished())
                 {
                     done.setFinished(true);
                     for (Thread sending : masterSendingThreadToClient)

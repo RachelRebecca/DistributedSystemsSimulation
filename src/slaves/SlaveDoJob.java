@@ -23,10 +23,10 @@ public class SlaveDoJob extends Thread
     // time Slave takes to do a B job
     private final int sleepB;
 
-    private final Done isDone;
+    private final Done done;
 
     public SlaveDoJob(ArrayList<Job> incompleteJobs, Object incompleteJobs_LOCK, ArrayList<Job> completedJobs,
-                      Object completedJobs_LOCK, int sleepA, int sleepB, Done isDone)
+                      Object completedJobs_LOCK, int sleepA, int sleepB, Done done)
     {
         this.incompleteJobs = incompleteJobs;
         this.incompleteJobs_LOCK = incompleteJobs_LOCK;
@@ -34,7 +34,7 @@ public class SlaveDoJob extends Thread
         this.completedJobs_LOCK = completedJobs_LOCK;
         this.sleepA = sleepA;
         this.sleepB = sleepB;
-        this.isDone = isDone;
+        this.done = done;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class SlaveDoJob extends Thread
     {
         try
         {
-            while (!isDone.getIsFinished())
+            while (!done.isFinished())
             {
                 Job myJob;
 
@@ -81,11 +81,6 @@ public class SlaveDoJob extends Thread
                     {
                         completedJobs.add(myJob);
                     }
-                }
-
-                if (isDone.getIsFinished())
-                {
-                    isDone.setFinished(true);
                 }
             }
         }

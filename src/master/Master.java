@@ -60,15 +60,13 @@ public class Master
         Object slaveBs_LOCK = new Object();
         Socket slaveB;
 
-        Done isDone = new Done();
+        Done done = new Done();
         Object done_LOCK = new Object();
 
         try
                 (
                         ServerSocket serverSocket = new ServerSocket(clientPortNumber);
-
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
-
                         ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber)
                 )
         {
@@ -76,7 +74,7 @@ public class Master
             // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
             MasterToClient clientMaker = new MasterToClient(clientSockets, clientSockets_LOCK,
                     serverSocket, unfinishedJobs, unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK,
-                    isDone, done_LOCK);
+                    done, done_LOCK);
 
             clientMaker.start();
 
@@ -123,15 +121,15 @@ public class Master
 
             // create and start a MasterSendingToSlave thread
             MasterSendingThreadToSlave sendingToSlave = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
-                    timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, isDone);
+                    timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, done);
 
             sendingToSlave.start();
 
-            while (!isDone.getIsFinished())
+            while (!done.isFinished())
             {
-                if (isDone.getClientNumber() == 0)
+                if (done.getClientNumber() == 0)
                 {
-                    isDone.setFinished(true);
+                    done.setFinished(true);
                 }
             }
 

@@ -16,7 +16,7 @@ public class Done
         finished = isFinished;
     }
 
-    public boolean getIsFinished()
+    public boolean isFinished()
     {
         return finished;
     }

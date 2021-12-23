@@ -29,7 +29,7 @@ public class MasterSendingThreadToSlave extends Thread
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
                                       TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
                                       Object timeTrackerForSlave_lock,
-                                      ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done isDone)
+                                      ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done done)
     {
         slaveA = slaveSocketA;
         slaveB = slaveSocketB;
@@ -38,7 +38,7 @@ public class MasterSendingThreadToSlave extends Thread
         this.timeTrackerForSlave_LOCK = timeTrackerForSlave_lock;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJobs_LOCK = unfinishedJobs_LOCK;
-        done = isDone;
+        this.done = done;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class MasterSendingThreadToSlave extends Thread
         try (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
              ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream()))
         {
-            while (!done.getIsFinished())
+            while (!done.isFinished())
             {
                 // check if there is a job to send
                 Job currJob;
@@ -91,11 +91,6 @@ public class MasterSendingThreadToSlave extends Thread
                             updateTimeTracker(currJob, timeTrackerForSlaveB);
                         }
                     }
-                }
-
-                if (done.getIsFinished())
-                {
-                    done.setFinished(true);
                 }
             }
         }

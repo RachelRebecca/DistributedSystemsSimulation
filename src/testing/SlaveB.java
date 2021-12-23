@@ -51,7 +51,7 @@ public class SlaveB
         {
 
             SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done);
-            SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done);
+            SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK);
 
             // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,

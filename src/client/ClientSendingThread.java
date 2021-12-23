@@ -26,14 +26,14 @@ public class ClientSendingThread extends Thread
     private final Done done;
 
     public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,
-                               ArrayList<Job> unfinishedList, Object unfinished_LOCK, Done isDone)
+                               ArrayList<Job> unfinishedList, Object unfinished_LOCK, Done done)
     {
         this.clientSocket = clientSocket;
         this.unsentList = unsentList;
         this.unsent_LOCK = unsent_LOCK;
         this.unfinishedList = unfinishedList;
         this.unfinished_LOCK = unfinished_LOCK;
-        this.done = isDone;
+        this.done = done;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ClientSendingThread extends Thread
         try (// stream to write text requests to Master
              ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
         {
-            while (!done.getIsFinished())
+            while (!done.isFinished())
             {
                 Job currJob;
 
@@ -74,11 +74,6 @@ public class ClientSendingThread extends Thread
                             unfinishedList.add(currJob);
                         }
                     }
-                }
-
-                if (done.getIsFinished())
-                {
-                    done.setFinished(true);
                 }
             }
         }

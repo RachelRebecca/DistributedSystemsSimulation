@@ -40,7 +40,7 @@ public class MasterSendingThreadToClient extends Thread
     {
        try (ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
        {
-           while (!done.getIsFinished())
+           while (!done.isFinished())
            {
                Job currJob = null;
 
@@ -70,11 +70,6 @@ public class MasterSendingThreadToClient extends Thread
                    requestWriter.writeObject(currJob);
                    System.out.println("Finished job " + currJob.getClient() + "." + currJob.getType() + "" + currJob.getId()
                            + " was sent to Client " + currJob.getClient() + ".\n");
-               }
-
-               if (done.getIsFinished())
-               {
-                   done.setFinished(true);
                }
            }
        }

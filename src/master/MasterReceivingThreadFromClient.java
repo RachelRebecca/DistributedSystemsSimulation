@@ -46,13 +46,12 @@ public class MasterReceivingThreadFromClient extends Thread
 
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
             {
-                //TODO: REMOVE
+                // if the client is exiting, decrement the number of clients connected in the done shared memory
                 if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
                 {
                     synchronized (done_LOCK)
                     {
                         done.removeClient();
-                        // add my client number to the clientToClose arrayList
                     }
                 }
                 else if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)

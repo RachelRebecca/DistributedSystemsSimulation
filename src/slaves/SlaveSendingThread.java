@@ -34,7 +34,7 @@ public class SlaveSendingThread extends Thread
     {
         try (ObjectOutputStream requestWriter = new ObjectOutputStream(slaveSocket.getOutputStream()))
         {
-            while (!done.getIsFinished())
+            while (!done.isFinished())
             {
                 Job myJob;
 
@@ -59,13 +59,6 @@ public class SlaveSendingThread extends Thread
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
                 }
-
-                if (done.getIsFinished())
-                {
-                    done.setFinished(true);
-                    requestWriter.close();
-                }
-
             }
         }
         catch (Exception e)

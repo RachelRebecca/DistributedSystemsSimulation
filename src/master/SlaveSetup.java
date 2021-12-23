@@ -47,7 +47,6 @@ public class SlaveSetup extends Thread
                 try
                 {
                     Socket slave = slaveServerSocket.accept();
-                    System.out.println("Got a Slave socket");
                     slaves.add(slave);
                 }
                 catch (IOException e)

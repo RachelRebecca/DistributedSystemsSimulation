@@ -17,14 +17,11 @@ public class SlaveReceivingThread extends Thread
     private final ArrayList<Job> incompleteJobs;
     private final Object incompleteList_LOCK;
 
-    private final Done done;
-
-    public SlaveReceivingThread(Socket socket, ArrayList<Job> jobsToComplete, Object incompleteJobs_LOCK, Done finished)
+    public SlaveReceivingThread(Socket socket, ArrayList<Job> jobsToComplete, Object incompleteJobs_LOCK)
     {
         slaveSocket = socket;
         incompleteJobs = jobsToComplete;
         incompleteList_LOCK = incompleteJobs_LOCK;
-        done = finished;
     }
 
     @Override
@@ -33,21 +30,14 @@ public class SlaveReceivingThread extends Thread
         try (ObjectInputStream objectInput = new ObjectInputStream(slaveSocket.getInputStream()))
         {
             Job job;
-            while (!done.getIsFinished())
-            {
-                // assign the job to whatever is being read from the Master
-                job = (Job) objectInput.readObject();
 
+            // assign the job to whatever is being read from the Master
+            while ((job = (Job) objectInput.readObject()) != null)
+            {
                 // add it to the list of incomplete jobs
                 synchronized (incompleteList_LOCK)
                 {
                     incompleteJobs.add(job);
-                }
-
-                if (done.getIsFinished())
-                {
-                    done.setFinished(true);
-                    objectInput.close();
                 }
             }
         }
