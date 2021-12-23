@@ -12,7 +12,7 @@ public class SlaveB
 {
 
     // IP address = "127.0.0.1"
-    // port = 30122
+    // port = 30123
 
     private static int aTime;
     private static int bTime;
