@@ -52,8 +52,8 @@ public class Master
         TimeTrackerForSlave timeTrackerB = new TimeTrackerForSlave(SlaveTypes.B);
         Object timeTracker_LOCK = new Object();
 
-        Socket slaveA;
-        Socket slaveB;
+        Socket slaveA = null;
+        Socket slaveB = null;
 
         Done isDone = new Done();
         Object done_LOCK = new Object();
@@ -63,10 +63,10 @@ public class Master
                         ServerSocket serverSocket = new ServerSocket(clientPortNumber);
 
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
-                        Socket slaveSocket1 = slaveServerSocket1.accept();
+//                        Socket slaveSocket1 = slaveServerSocket1.accept();
 
                         ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber);
-                        Socket slaveSocket2 = slaveServerSocket2.accept()
+//                        Socket slaveSocket2 = slaveServerSocket2.accept()
                 )
         {
             // create and start a MasterToClient thread, which constantly accepts incoming Clients
@@ -76,9 +76,26 @@ public class Master
                     unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
             mtc.start();
 
-            //hardcode 2 slaves -> maybe change for extra credit
+            /*//hardcode 2 slaves -> maybe change for extra credit
             slaveA = slaveSocket1;
-            slaveB = slaveSocket2;
+            slaveB = slaveSocket2;*/
+
+            // use threads to set up both slaves
+            SlaveASetup aMaker = new SlaveASetup(slaveA, slaveServerSocket1);
+            SlaveBSetup bMaker = new SlaveBSetup(slaveB, slaveServerSocket2);
+
+            aMaker.start();
+            bMaker.start();
+
+            try
+            {
+                aMaker.join();
+                bMaker.join();
+            }
+            catch (Exception e)
+            {
+                System.out.println("problem joining slave makers: " + e.getMessage());
+            }
 
             // create and start two different MasterReceivingFromSlave threads (one for SlaveA and one for SlaveB)
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave(slaveA,
