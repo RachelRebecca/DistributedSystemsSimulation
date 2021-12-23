@@ -5,17 +5,28 @@ import resources.*;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
+/**
+ * Master sends finished jobs to Client using the client's socket
+ * One SendingThread is made for each Client connected to the Master
+ * Removes finished jobs from shared memory
+ */
 public class MasterSendingThreadToClient extends Thread
 {
+    // Socket connecting Client to Master
     private final Socket clientSocket;
+
+    // list of finished jobs to send to the client (shared memory)
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
-    private final Done done; // TODO: final?
+
+    private final Done done;
+
+    // the ID of the Client which the Master is sending jobs to using this thread
     private final int clientNumber;
 
-    public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK, int clientNumber)
+    public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs,
+                                       Object finishedJobs_LOCK, int clientNumber)
     {
         this.clientSocket = clientSocket;
         this.finishedJobs = finishedJobs;
@@ -27,19 +38,24 @@ public class MasterSendingThreadToClient extends Thread
     @Override
     public void run()
     {
-       try (ObjectOutputStream requestWriter = // stream to write text requests to server
-            new ObjectOutputStream(clientSocket.getOutputStream()))
+       try (// stream to write text requests to server
+            ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
        {
            while (!done.getIsFinished())
            {
                Job currJob = null;
-               int finishedJobsSize;
 
+               int finishedJobsSize;
+               // if size of finished job list is greater than 1 (i.e. there is a finished job),
+               // if the client ID on the job is equal to the client ID of the Client this thread is sending to,
+               // remove the job
                synchronized (finishedJobs_LOCK)
                {
                    finishedJobsSize = finishedJobs.size();
                    if (finishedJobsSize > 0)
                    {
+                       // check if the current available finished job to send
+                       // came from the client this sending thread was created for
                        if (finishedJobs.get(0).getClient() == clientNumber)
                        {
                            currJob = finishedJobs.get(0);
@@ -50,7 +66,7 @@ public class MasterSendingThreadToClient extends Thread
 
                if (finishedJobsSize > 0 && currJob != null)
                {
-                   //send finished job to client
+                   //update status and send finished job to client
                    currJob.setStatus(JobStatuses.FINISHED_SEND_TO_CLIENT);
                    requestWriter.writeObject(currJob);
                    System.out.println("Finished job " + currJob.getClient() + "." + currJob.getType() + "" + currJob.getId()

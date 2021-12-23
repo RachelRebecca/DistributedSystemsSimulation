@@ -10,11 +10,13 @@ import java.util.ArrayList;
  * Thread receives from Master using the client socket
  * It only receives finished jobs that have already been completed
  */
-
 public class ClientReceivingThread extends Thread
 {
+    // Socket connecting Client to Master
     private final Socket clientSocket;
-    private ArrayList<Job> unfinishedList;
+
+    // list of unfinished jobs (shared memory)
+    private final ArrayList<Job> unfinishedList;
     private final Object unfinished_LOCK;
 
     public ClientReceivingThread(Socket clientSocket, ArrayList<Job> unfinishedList, Object unfinished_LOCK)
@@ -27,15 +29,15 @@ public class ClientReceivingThread extends Thread
     @Override
     public void run()
     {
-        try (// stream to read object response from server
-             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream())
-            )
+        try (// stream to read object response from Master
+             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream()))
         {
             Job serverMessage; // set job to be whatever is being read from the Master
             while ((serverMessage = (Job) objectInputStream.readObject()) != null)
             {
-                System.out.println("\njob " + serverMessage.getType() + serverMessage.getId() + " was finished.");
+                System.out.println("\nJob " + serverMessage.getType() + serverMessage.getId() + " was finished.");
 
+                // If Client receives a finished job, remove it from the unfinished list based on its ID
                 synchronized (unfinished_LOCK)
                 {
                     Job toRemove = null;
@@ -53,7 +55,7 @@ public class ClientReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("sending thread: No longer connected to Master. " + e.getMessage());
+            System.out.println("No longer connected to Master. ");
         }
     }
 }

@@ -21,22 +21,16 @@ public class Master
 
         if (args.length != 3 || isNotInteger(args[0]) || isNotInteger(args[1]) || isNotInteger(args[2]))
         {
-            System.err.println("Usage: java Master <client port number> <slave a port number> <slave b port number>");
+            System.err.println("Usage: java Master <Client port number> <Slave A port number> <Slave B port number>");
             System.exit(1);
         }
 
+        // Assign the port numbers using the command line
         int clientPortNumber = Integer.parseInt(args[0]);
         int slaveAPortNumber = Integer.parseInt(args[1]);
         int slaveBPortNumber = Integer.parseInt(args[2]);
 
-        // setup for threads
-
-        // list of MasterReceivingFromClient and MasterSendingToClient threads
-        // every time MasterToClient creates a new client, one new Receiving and Sending Thread gets added
-        /*ArrayList<Thread> masterReceivingThreadFromClients = new ArrayList<>();
-        Object masterReceivingThreadFromClient_LOCK = new Object();
-        ArrayList<Thread> masterSendingThreadToClients = new ArrayList<>();
-        Object masterSendingThreadToClient_LOCK = new Object();*/
+        // setup for threads:
 
         // list of unfinished jobs that gets filled by the Client - unfinished jobs are sent to the Slaves
         ArrayList<Job> unfinishedJobs = new ArrayList<>();
@@ -56,12 +50,15 @@ public class Master
         TimeTrackerForSlave timeTrackerB = new TimeTrackerForSlave(SlaveTypes.B);
         Object timeTracker_LOCK = new Object();
 
+        //set up for SlaveASetup
         ArrayList<Socket> slaveAs = new ArrayList<>();
-        ArrayList<Socket> slaveBs = new ArrayList<>();
-        Socket slaveA = null;
-        Socket slaveB = null;
         Object slaveAs_LOCK = new Object();
+        Socket slaveA;
+
+        //set up for SlaveBSetup
+        ArrayList<Socket> slaveBs = new ArrayList<>();
         Object slaveBs_LOCK = new Object();
+        Socket slaveB;
 
         Done isDone = new Done();
         Object done_LOCK = new Object();
@@ -71,35 +68,26 @@ public class Master
                         ServerSocket serverSocket = new ServerSocket(clientPortNumber);
 
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
-//                        Socket slaveSocket1 = slaveServerSocket1.accept();
 
                         ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber);
-//                        Socket slaveSocket2 = slaveServerSocket2.accept()
                 )
         {
             // create and start a MasterToClient thread, which constantly accepts incoming Clients
             // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
-            MasterToClient mtc = new MasterToClient(clientSockets, clientSockets_LOCK,
-                    /*masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
-                    masterSendingThreadToClients, masterSendingThreadToClient_LOCK, */serverSocket, unfinishedJobs,
-                    unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
-            mtc.start();
+            MasterToClient clientMaker = new MasterToClient(clientSockets, clientSockets_LOCK,
+                    serverSocket, unfinishedJobs, unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK,
+                    isDone, done_LOCK);
 
-            /*//hardcode 2 slaves -> maybe change for extra credit
-            slaveA = slaveSocket1;
-            slaveB = slaveSocket2;*/
+            clientMaker.start();
 
             // use threads to set up both slaves
             SlaveASetup aMaker = new SlaveASetup(slaveAs, slaveAs_LOCK, slaveServerSocket1);
             SlaveBSetup bMaker = new SlaveBSetup(slaveBs, slaveBs_LOCK, slaveServerSocket2);
 
-            System.out.println("slave makers created");
-
             aMaker.start();
             bMaker.start();
 
-            System.out.println("slave makers started");
-
+            // join slave maker threads
             try
             {
                 aMaker.join();
@@ -107,18 +95,14 @@ public class Master
             }
             catch (Exception e)
             {
-                System.out.println("problem joining slave makers: " + e.getMessage());
+                System.out.println(e.getMessage());
             }
 
-            System.out.println("slave makers joined");
-
+            // assign Slave A and Slave B sockets using shared memory
             slaveA = slaveAs.get(0);
             slaveB = slaveBs.get(0);
 
-            System.out.println("Slave a check: " + slaveA + ". Is null? " + (slaveA == null));
-            System.out.println("Slave b check: " + slaveB + ". Is null? " + (slaveB == null));
-
-            // make sure there is at least one client
+            // make sure there is at least one client before continuing
             int size = 0;
             while (size == 0)
             {
@@ -128,7 +112,7 @@ public class Master
                 }
             }
 
-            // create and start two different MasterReceivingFromSlave threads (one for SlaveA and one for SlaveB)
+            // create and start two different MasterReceivingFromSlave threads (one for Slave A and one for Slave B)
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave(slaveA,
                     timeTrackerA, timeTrackerB, timeTracker_LOCK, finishedJobs, finishedJob_LOCK);
             MasterReceivingThreadFromSlave receivingFromSlaveB = new MasterReceivingThreadFromSlave(slaveB,
@@ -138,9 +122,10 @@ public class Master
             receivingFromSlaveB.start();
 
             // create and start a MasterSendingToSlave thread
-            MasterSendingThreadToSlave sThread = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
+            MasterSendingThreadToSlave sendingToSlave = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                     timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, isDone);
-            sThread.start();
+
+            sendingToSlave.start();
 
             while (!isDone.getIsFinished())
             {
@@ -150,19 +135,20 @@ public class Master
                 }
             }
 
-            //join all threads
+            //join all the other threads
             try
             {
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
-                mtc.join();
-                sThread.join();
+                clientMaker.join();
+                sendingToSlave.join();
             }
             catch (Exception e)
             {
                 System.out.println(e.getMessage());
             }
         }
+
         catch (Exception e)
         {
             System.out.println(e.getMessage());

@@ -9,38 +9,29 @@ import java.util.ArrayList;
 
 public class MasterToClient extends Thread
 {
-    ArrayList<Thread> masterReceivingThreadFromClient = new ArrayList<>();
-    Object masterReceivingThreadFromClient_LOCK = new Object();
-    ArrayList<Thread> masterSendingThreadToClient = new ArrayList<>();
-    Object masterSendingThreadToClient_LOCK = new Object();
+    private final ArrayList<Thread> masterReceivingThreadFromClient = new ArrayList<>();
+    private final ArrayList<Thread> masterSendingThreadToClient = new ArrayList<>();
 
-    ServerSocket serverSocket;
-    final ArrayList<Job> unfinishedJobs;
-    final Object unfinishedJob_LOCK;
-    final ArrayList<Job> finishedJobs;
-    final Object finishedJob_LOCK;
+    private final ServerSocket serverSocket;
+    private final ArrayList<Job> unfinishedJobs;
+    private final Object unfinishedJob_LOCK;
+    private final ArrayList<Job> finishedJobs;
+    private final Object finishedJob_LOCK;
 
-    final ArrayList<Integer> clientsToClose;
-    final Object clientsToClose_LOCK;
+    private final ArrayList<Integer> clientsToClose;
+    private final Object clientsToClose_LOCK;
 
-    final Done done;
-    Object done_LOCK;
+    private final Done done;
+    private final Object done_LOCK;
 
-    ArrayList<Socket> clientSockets;
-    Object clientSockets_LOCK;
+    private final ArrayList<Socket> clientSockets;
+    private final Object clientSockets_LOCK;
 
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
-            /*ArrayList<Thread> masterReceivingThreadFromClient, Object masterReceivingThreadFromClient_LOCK,
-                          ArrayList<Thread> masterSendingThreadToClient, Object masterSendingThreadToClient_LOCK,*/
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
                           ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone, Object done_LOCK)
     {
-        /*this.masterReceivingThreadFromClient = masterReceivingThreadFromClient;
-        this.masterReceivingThreadFromClient_LOCK = masterReceivingThreadFromClient_LOCK;
-        this.masterSendingThreadToClient = masterSendingThreadToClient;
-        this.masterSendingThreadToClient_LOCK = masterSendingThreadToClient_LOCK;*/
-
         this.serverSocket = serverSocket;
 
         this.unfinishedJobs = unfinishedJobs;
@@ -77,21 +68,16 @@ public class MasterToClient extends Thread
                     done.addClient();
                 }
 
-//                synchronized (masterReceivingThreadFromClient_LOCK)
-//                {
-                    MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
-                            clientSocket, done, done_LOCK, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
-                    masterReceivingThreadFromClient.add(mrc);
-                    mrc.start();
-//                }
+                MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
+                        clientSocket, done, done_LOCK, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
+                masterReceivingThreadFromClient.add(mrc);
+                mrc.start();
 
-//                synchronized (masterSendingThreadToClient_LOCK)
-//                {
-                    MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
-                            clientSocket, done, finishedJobs, finishedJob_LOCK, clientNumber);
-                    masterSendingThreadToClient.add(msc);
-                    msc.start();
-//                }
+                MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
+                        clientSocket, done, finishedJobs, finishedJob_LOCK, clientNumber);
+                masterSendingThreadToClient.add(msc);
+                msc.start();
+
 
                 synchronized (clientsToClose_LOCK)
                 {
@@ -119,19 +105,28 @@ public class MasterToClient extends Thread
                 if (done.getIsFinished())
                 {
                     done.setFinished(true);
-                    try
+                    for (Thread sending : masterSendingThreadToClient)
                     {
-                        for (Thread sending : masterSendingThreadToClient)
+                        try
                         {
                             sending.join();
                         }
-                        for (Thread receiving : masterReceivingThreadFromClient)
+                        catch (Exception e)
+                        {
+                            System.out.println(e.getMessage());
+                        }
+                    }
+
+                    for (Thread receiving : masterReceivingThreadFromClient)
+                    {
+                        try
                         {
                             receiving.join();
                         }
-                    } catch (Exception e)
-                    {
-                        System.out.println(e.getMessage());
+                        catch (Exception e)
+                        {
+                            System.out.println(e.getMessage());
+                        }
                     }
                 }
             }

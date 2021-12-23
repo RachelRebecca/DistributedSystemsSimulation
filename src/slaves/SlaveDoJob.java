@@ -6,21 +6,24 @@ import java.util.ArrayList;
 
 public class SlaveDoJob extends Thread
 {
-    private ArrayList<Job> jobsToComplete;
-    private final Object jobsToCompleteLock;
-    private ArrayList<Job> jobsCompleted;
-    private final Object jobsCompletedLock;
+    private final ArrayList<Job> incompleteJobs;
+    private final Object incompleteJobs_LOCK;
+
+    private final ArrayList<Job> completedJobs;
+    private final Object completedJobs_LOCK;
+
     private final int sleepA;
     private final int sleepB;
-    private Done isDone;
 
-    public SlaveDoJob(ArrayList<Job> jobsToComplete, Object jobsToCompleteLock, ArrayList<Job> jobsCompleted,
-                      Object jobsCompletedLock, int sleepA, int sleepB, Done isDone)
+    private final Done isDone;
+
+    public SlaveDoJob(ArrayList<Job> incompleteJobs, Object incompleteJobs_LOCK, ArrayList<Job> completedJobs,
+                      Object completedJobs_LOCK, int sleepA, int sleepB, Done isDone)
     {
-        this.jobsToComplete = jobsToComplete;
-        this.jobsToCompleteLock = jobsToCompleteLock;
-        this.jobsCompleted = jobsCompleted;
-        this.jobsCompletedLock = jobsCompletedLock;
+        this.incompleteJobs = incompleteJobs;
+        this.incompleteJobs_LOCK = incompleteJobs_LOCK;
+        this.completedJobs = completedJobs;
+        this.completedJobs_LOCK = completedJobs_LOCK;
         this.sleepA = sleepA;
         this.sleepB = sleepB;
         this.isDone = isDone;
@@ -33,20 +36,25 @@ public class SlaveDoJob extends Thread
         {
             while (!isDone.getIsFinished())
             {
-                int length;
                 Job myJob;
-                synchronized (jobsToCompleteLock)
+
+                // get size of incomplete jobs list
+                int length;
+                synchronized (incompleteJobs_LOCK)
                 {
-                    length = jobsToComplete.size();
+                    length = incompleteJobs.size();
                 }
+
+                //if there is a job that needs to be completed, assign it to myJob
                 if (length > 0)
                 {
-                    synchronized (jobsToCompleteLock)
+                    synchronized (incompleteJobs_LOCK)
                     {
-                        myJob = jobsToComplete.get(0);
-                        jobsToComplete.remove(0);
+                        myJob = incompleteJobs.get(0);
+                        incompleteJobs.remove(0);
                     }
 
+                    // If it's an A job, do the A sleep, otherwise do the B sleep
                     if (myJob.getType() == JobTypes.A)
                     {
                         System.out.println("Doing an A sleep for job " + myJob.getClient() + "." + myJob.getType()
@@ -60,9 +68,10 @@ public class SlaveDoJob extends Thread
                         Thread.sleep(sleepB);
                     }
 
-                    synchronized (jobsCompletedLock)
+                    // add the completed job to the list of completed jobs
+                    synchronized (completedJobs_LOCK)
                     {
-                        jobsCompleted.add(myJob);
+                        completedJobs.add(myJob);
                     }
                 }
 

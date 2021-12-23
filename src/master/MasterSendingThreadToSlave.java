@@ -7,14 +7,16 @@ import java.util.ArrayList;
 
 public class MasterSendingThreadToSlave extends Thread
 {
-
     private final Socket slaveA;
     private final Socket slaveB;
+
     private final TimeTrackerForSlave timeTrackerForSlaveA;
     private final TimeTrackerForSlave timeTrackerForSlaveB;
     private final Object timeTrackerForSlave_LOCK;
+
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJobs_LOCK;
+
     private final Done done;
 
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
@@ -51,19 +53,22 @@ public class MasterSendingThreadToSlave extends Thread
 
                 if (unsentSize > 0)
                 {
-                    // if there is, get the first job, send it to the best slave, and update the slave time tracker
+                    // if there is, store the first job as currJob
                     synchronized (unfinishedJobs_LOCK)
                     {
                         currJob = unfinishedJobs.get(0);
                         unfinishedJobs.remove(0);
                     }
 
-                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB, timeTrackerForSlave_LOCK,
-                            currJob);
+                    // Use Load Balancing Algorithm to determine which slave should be sent currJob
+                    SlaveTypes slave = LoadBalance.loadBalance(timeTrackerForSlaveA, timeTrackerForSlaveB,
+                            timeTrackerForSlave_LOCK, currJob);
                     System.out.println("Sending job " + currJob.getClient() + "." + currJob.getType() + currJob.getId()
                             + " to Slave " + slave.name() + "\n");
                     currJob.setSlaveType(slave);
 
+                    // Send the job to the slave using the specific slave's ObjectOutputStream
+                    // Update that slave's TimeTracker object to account for the new job
                     if (slave.equals(SlaveTypes.A))
                     {
                         objectOutputStreamSlaveA.writeObject(currJob);
@@ -90,11 +95,17 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("sending thread: Detected Slave exit. " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Detected Slave exit. ");
         }
     }
 
+    /**
+     * Update Time Tracker Object belonging to the slave based on the current job type
+     *      - An object for Slave A, Job A or Slave B, Job B adds 2000
+     *      - An object for Slave A, Job B or Slave B, Job A adds 10000
+     * @param currJob - the current job
+     * @param timeTrackerForSlave - the object for the specific slave being updated
+     */
     public static void updateTimeTracker(Job currJob, TimeTrackerForSlave timeTrackerForSlave)
     {
         if (currJob.getType().equals(JobTypes.A))

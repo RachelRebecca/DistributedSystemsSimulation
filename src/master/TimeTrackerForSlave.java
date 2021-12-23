@@ -1,13 +1,16 @@
 package master;
 
-import resources.SlaveTypes;
+import resources.*;
 
+/**
+ * Class to store the current time for a Slave to complete its job
+ */
 public class TimeTrackerForSlave
 {
     private int time;
     private int aTime;
     private int bTime;
-    private SlaveTypes slaveType;
+    private final SlaveTypes slaveType;
 
     public TimeTrackerForSlave(SlaveTypes slaveTypeChar)
     {
@@ -18,15 +21,20 @@ public class TimeTrackerForSlave
 
     public void setABTime()
     {
+        int shortTime = 2000;
+        int longTime = 10000;
+
+        // Slave A, Job A = 2000, Slave A, Job B = 10000
         if (slaveType.equals(SlaveTypes.A))
         {
-            aTime = 2000;
-            bTime = 10000;
+            aTime = shortTime;
+            bTime = longTime;
         }
+        // Slave B, Job A = 10000, Slave B, Job B = 2000
         else if (slaveType.equals(SlaveTypes.B))
         {
-            aTime = 10000;
-            bTime = 2000;
+            aTime = longTime;
+            bTime = shortTime;
         }
     }
 

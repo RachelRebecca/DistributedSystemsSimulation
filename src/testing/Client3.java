@@ -1,5 +1,7 @@
-package client;
+package testing;
 
+import client.ClientReceivingThread;
+import client.ClientSendingThread;
 import resources.*;
 
 import java.io.BufferedReader;
@@ -12,7 +14,7 @@ import java.util.ArrayList;
  * - make a Client Socket, and get the jobs from the User
  * - start and join Client Threads
  */
-public class Client1
+public class Client3
 {
 
     // IP address = "127.0.0.1"

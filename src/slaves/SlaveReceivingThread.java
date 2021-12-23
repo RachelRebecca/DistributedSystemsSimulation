@@ -6,10 +6,10 @@ import resources.*;
 
 public class SlaveReceivingThread extends Thread
 {
-    private Socket slaveSocket;
-    private ArrayList<Job> incompleteJobs;
+    private final Socket slaveSocket;
+    private final ArrayList<Job> incompleteJobs;
     private final Object incompleteList_LOCK;
-    private Done done;
+    private final Done done;
 
     public SlaveReceivingThread(Socket socket, ArrayList<Job> jobsToComplete, Object incompleteJobs_LOCK, Done finished)
     {
@@ -27,7 +27,10 @@ public class SlaveReceivingThread extends Thread
             Job job;
             while (!done.getIsFinished())
             {
+                // assign the job to whatever is being read from the Master
                 job = (Job) objectInput.readObject();
+
+                // add it to the list of incomplete jobs
                 synchronized (incompleteList_LOCK)
                 {
                     incompleteJobs.add(job);

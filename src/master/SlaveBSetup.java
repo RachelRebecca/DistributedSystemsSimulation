@@ -7,9 +7,9 @@ import java.util.ArrayList;
 
 public class SlaveBSetup extends Thread
 {
-    ArrayList<Socket> slaveBs;
-    Object slaveB_LOCK;
-    ServerSocket slaveBServerSocket;
+    private final ArrayList<Socket> slaveBs;
+    private final Object slaveB_LOCK;
+    private final ServerSocket slaveBServerSocket;
 
     public SlaveBSetup(ArrayList<Socket> slaveBs, Object slaveB_LOCK, ServerSocket slaveBServerSocket)
     {
@@ -39,12 +39,12 @@ public class SlaveBSetup extends Thread
                 try
                 {
                     Socket slaveB = slaveBServerSocket.accept();
-                    System.out.println("got a slave B socket");
+                    System.out.println("Got a slave B socket");
                     slaveBs.add(slaveB);
-                } catch (IOException e)
+                }
+                catch (IOException e)
                 {
-                    System.out.println("problem with slave a maker");
-                    continue;
+                    System.out.println(e.getMessage());
                 }
             }
         }

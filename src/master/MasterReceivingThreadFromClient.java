@@ -5,7 +5,6 @@ import resources.*;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Master receives unfinished jobs from the Client using the client socket
@@ -13,12 +12,18 @@ import java.util.Arrays;
  */
 public class MasterReceivingThreadFromClient extends Thread
 {
+    // Socket connecting Client to Master
     private final Socket clientSocket;
+
     private final Done done;
     private final Object done_LOCK;
+
+    // list of unfinished jobs (shared memory)
+    // received by Client and sent to Slave to complete
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJob_LOCK;
-    private int clientNumber;
+
+    private final int clientNumber;
 
 
     public MasterReceivingThreadFromClient(Socket clientSocket, Done done, Object done_LOCK, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
@@ -35,13 +40,13 @@ public class MasterReceivingThreadFromClient extends Thread
     @Override
     public void run()
     {
-        try (// stream to read object response from server
-             ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream()))
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(clientSocket.getInputStream()))
         {
             Job receivedJob; // set job to whatever is being read from the Client
 
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
             {
+                //TODO: REMOVE
                 if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
                 {
                     synchronized (done_LOCK)
@@ -52,7 +57,6 @@ public class MasterReceivingThreadFromClient extends Thread
                 }
                 else if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
-
                     //update job status
                     receivedJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
 

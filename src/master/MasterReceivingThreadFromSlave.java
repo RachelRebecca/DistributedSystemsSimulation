@@ -12,10 +12,15 @@ import java.util.ArrayList;
  */
 public class MasterReceivingThreadFromSlave extends Thread
 {
+    // Socket connecting Slave to Master
     private final Socket slaveSocket;
+
+    // Time Tracker objects for each slave
     private final TimeTrackerForSlave timeTrackerForSlaveA;
     private final TimeTrackerForSlave timeTrackerForSlaveB;
     private final Object timeTracker_LOCK;
+
+    // list of finished jobs completed by Slave (shared memory)
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
 
@@ -35,8 +40,7 @@ public class MasterReceivingThreadFromSlave extends Thread
     @Override
     public void run()
     {
-        try (// stream to read object response from server
-             ObjectInputStream objectInputStream = new ObjectInputStream(slaveSocket.getInputStream()))
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(slaveSocket.getInputStream()))
         {
             Job receivedJob; // fill with jobs sent to Master from the Slave
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
@@ -69,8 +73,7 @@ public class MasterReceivingThreadFromSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("receiving thread: Detected Slave exit. " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("Detected Slave exit. ");
         }
 
     }

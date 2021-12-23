@@ -24,6 +24,8 @@ public class Slave
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
+
+        //Set the Slave Type to be A or B
         SlaveTypes slaveType = SlaveTypes.NULL;
         if (args[2].equals(SlaveTypes.A.name()))
         {
@@ -34,20 +36,24 @@ public class Slave
             slaveType = SlaveTypes.B;
         }
 
+        // List of jobs that haven't been completed yet by the slave
         ArrayList<Job> incompleteJobList = new ArrayList<>();
         Object incompleteJob_LOCK = new Object();
+
+        // List of jobs that have been completed by the slave, and which needs to be sent back to the Master
         ArrayList<Job> completedJobList = new ArrayList<>();
         Object completedJobList_LOCK = new Object();
+
         Done done = new Done();
 
         setABTime(slaveType);
 
-        System.out.println("Slave " + slaveType + " portNumber: " + portNumber);
+        System.out.println("Slave " + slaveType + " Port Number: " + portNumber);
 
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
 
-            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done, slaveType);
+            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done);
             SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done);
 
             // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once
@@ -94,17 +100,26 @@ public class Slave
         return isInteger;
     }
 
+    /**
+     * Set the time needed to add to a slave for an A and B job
+     * @param slaveType - the slave type
+     */
     private static void setABTime(SlaveTypes slaveType)
     {
+        int shortTime = 2000;
+        int longTime = 10000;
+
+        // Slave A, Job A -> 2000, Slave A, Job B -> 10000
         if (slaveType.equals(SlaveTypes.A))
         {
-            aTime = 2000;
-            bTime = 10000;
+            aTime = shortTime;
+            bTime = longTime;
         }
+        // Slave B, Job A -> 10000, Slave B, Job B -> 2000
         else if (slaveType.equals(SlaveTypes.B))
         {
-            aTime = 10000;
-            bTime = 2000;
+            aTime = longTime;
+            bTime = shortTime;
         }
     }
 }

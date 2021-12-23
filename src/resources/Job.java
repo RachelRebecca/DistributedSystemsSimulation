@@ -2,13 +2,18 @@ package resources;
 
 import java.io.Serializable;
 
+/**
+ * Class representing a job
+ * Jobs are created by User through Client, passed to Master, and sent to a Slave to complete
+ * Slave then sends back to Master the finished job, and Master sends the job back to Client, completed.
+ */
 public class Job implements Serializable
 {
     private int client;
-    private SlaveTypes slaveType;
     private JobTypes type;
     private int id;
     private JobStatuses status;
+    private SlaveTypes slaveType;
 
     public Job (int clientNumber, JobTypes jobType, int Id, JobStatuses jobStatus)
     {
@@ -19,6 +24,7 @@ public class Job implements Serializable
         slaveType = SlaveTypes.NULL;
     }
 
+    // getters and setters
     public int getClient()
     {
         return client;

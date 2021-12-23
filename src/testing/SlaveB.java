@@ -1,6 +1,9 @@
-package slaves;
+package testing;
 
 import resources.*;
+import slaves.SlaveDoJob;
+import slaves.SlaveReceivingThread;
+import slaves.SlaveSendingThread;
 
 import java.net.Socket;
 import java.util.ArrayList;
@@ -47,7 +50,7 @@ public class SlaveB
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
 
-            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done, slaveType);
+            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done);
             SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK, done);
 
             // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once

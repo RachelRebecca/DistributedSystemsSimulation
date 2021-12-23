@@ -12,11 +12,14 @@ import java.util.ArrayList;
  */
 public class ClientSendingThread extends Thread
 {
+    //the Socket connecting the Client to the Master
     private final Socket clientSocket;
 
     //list of jobs that haven't yet been sent to Master (shared memory)
     private final ArrayList<Job> unsentList;
     private final Object unsent_LOCK;
+
+    // list of jobs that have not yet been received by the Client from the Master (shared memory)
     private final ArrayList<Job> unfinishedList;
     private final Object unfinished_LOCK;
 
@@ -36,14 +39,14 @@ public class ClientSendingThread extends Thread
     @Override
     public void run()
     {
-        try
-                (ObjectOutputStream requestWriter = // stream to write text requests to server
-                     new ObjectOutputStream(clientSocket.getOutputStream()))
+        try (// stream to write text requests to Master
+             ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
         {
             while (!done.getIsFinished())
             {
                 Job currJob;
 
+                // get size of unsent list
                 int unsentSize;
                 synchronized (unsent_LOCK)
                 {
@@ -63,6 +66,7 @@ public class ClientSendingThread extends Thread
                     // send the job to the Master
                     requestWriter.writeObject(currJob);
 
+                    // add the job to the unfinished list
                     synchronized (unfinished_LOCK)
                     {
                         if (currJob.getStatus() != JobStatuses.CLIENT_DONE)
@@ -80,7 +84,7 @@ public class ClientSendingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("sending thread: No longer connected to Master. " + e.getMessage());
+            System.out.println("No longer connected to Master. ");
         }
     }
 }

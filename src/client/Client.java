@@ -26,15 +26,17 @@ public class Client
             System.exit(1);
         }
 
+        // Assign host name, and port number using command line
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
-        int jobId = 1;
         int clientId = Integer.parseInt(args[2]);
+        int jobId = 1;
 
         // list of jobs that haven't been sent yet to Master
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
 
+        // list of jobs that haven't yet been finished
         ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
 
@@ -44,8 +46,7 @@ public class Client
                 (
                         Socket clientSocket = new Socket(hostName, portNumber);
                         BufferedReader stdIn = // standard input stream to get user's requests
-                            new BufferedReader(
-                                 new InputStreamReader(System.in))
+                            new BufferedReader(new InputStreamReader(System.in))
                 )
         {
             //each client has exactly one sending thread, and one receiving thread
@@ -103,7 +104,6 @@ public class Client
                 jobId++;
             }
 
-            //WHEN MASTER SENDS CLIENT DONE JOB, THEN
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
             // send a done job
@@ -126,6 +126,7 @@ public class Client
             while (size > 0);
 
             done.setFinished(true);
+
             // join all threads for the client
             try
             {
@@ -136,6 +137,7 @@ public class Client
             {
                 System.out.println(e.getMessage());
             }
+
             System.exit(0);
         }
         catch (Exception e)
