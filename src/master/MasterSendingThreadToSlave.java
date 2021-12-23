@@ -90,7 +90,7 @@ public class MasterSendingThreadToSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.print("");
+            System.out.println("Detected Slave exit.");
         }
     }
 

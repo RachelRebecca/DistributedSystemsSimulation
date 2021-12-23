@@ -42,7 +42,8 @@ public class SlaveReceivingThread extends Thread
         }
         catch (Exception e)
         {
-            System.out.println();
+            System.out.println("Detected Master exit. Exiting Slave.");
+            System.exit(0);
         }
     }
 }
