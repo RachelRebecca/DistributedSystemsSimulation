@@ -46,14 +46,22 @@ public class Master
         ArrayList<Job> finishedJobs = new ArrayList<>();
         Object finishedJob_LOCK = new Object();
 
+        // list of client sockets
+        ArrayList<Socket> clientSockets = new ArrayList<>();
+        Object clientSockets_LOCK = new Object();
+
         // TimeTracker objects - one for SlaveA and one for SlaveB,
         // storing the current total time each slave will need to complete all its jobs
         TimeTrackerForSlave timeTrackerA = new TimeTrackerForSlave(SlaveTypes.A);
         TimeTrackerForSlave timeTrackerB = new TimeTrackerForSlave(SlaveTypes.B);
         Object timeTracker_LOCK = new Object();
 
+        ArrayList<Socket> slaveAs = new ArrayList<>();
+        ArrayList<Socket> slaveBs = new ArrayList<>();
         Socket slaveA = null;
         Socket slaveB = null;
+        Object slaveAs_LOCK = new Object();
+        Object slaveBs_LOCK = new Object();
 
         Done isDone = new Done();
         Object done_LOCK = new Object();
@@ -71,7 +79,8 @@ public class Master
         {
             // create and start a MasterToClient thread, which constantly accepts incoming Clients
             // and starts a new MasterSendingToClient and MasterReceivingFromClient threads for each connecting client
-            MasterToClient mtc = new MasterToClient(/*masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
+            MasterToClient mtc = new MasterToClient(clientSockets, clientSockets_LOCK,
+                    /*masterReceivingThreadFromClients, masterReceivingThreadFromClient_LOCK,
                     masterSendingThreadToClients, masterSendingThreadToClient_LOCK, */serverSocket, unfinishedJobs,
                     unfinishedJob_LOCK, finishedJobs, finishedJob_LOCK, isDone, done_LOCK);
             mtc.start();
@@ -81,11 +90,15 @@ public class Master
             slaveB = slaveSocket2;*/
 
             // use threads to set up both slaves
-            SlaveASetup aMaker = new SlaveASetup(slaveA, slaveServerSocket1);
-            SlaveBSetup bMaker = new SlaveBSetup(slaveB, slaveServerSocket2);
+            SlaveASetup aMaker = new SlaveASetup(slaveAs, slaveAs_LOCK, slaveServerSocket1);
+            SlaveBSetup bMaker = new SlaveBSetup(slaveBs, slaveBs_LOCK, slaveServerSocket2);
+
+            System.out.println("slave makers created");
 
             aMaker.start();
             bMaker.start();
+
+            System.out.println("slave makers started");
 
             try
             {
@@ -95,6 +108,24 @@ public class Master
             catch (Exception e)
             {
                 System.out.println("problem joining slave makers: " + e.getMessage());
+            }
+
+            System.out.println("slave makers joined");
+
+            slaveA = slaveAs.get(0);
+            slaveB = slaveBs.get(0);
+
+            System.out.println("Slave a check: " + slaveA + ". Is null? " + (slaveA == null));
+            System.out.println("Slave b check: " + slaveB + ". Is null? " + (slaveB == null));
+
+            // make sure there is at least one client
+            int size = 0;
+            while (size == 0)
+            {
+                synchronized (clientSockets_LOCK)
+                {
+                    size = clientSockets.size();
+                }
             }
 
             // create and start two different MasterReceivingFromSlave threads (one for SlaveA and one for SlaveB)

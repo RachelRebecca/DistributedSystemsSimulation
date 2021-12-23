@@ -66,12 +66,12 @@ public class SlaveB
             }
             catch (Exception e)
             {
-                System.out.println(e.getMessage());
+                System.out.println("inner catch: " + e.getMessage());
             }
         }
         catch (Exception e)
         {
-            System.out.println(e.getMessage());
+            System.out.println("outer catch: " + e.getMessage());
         }
     }
 

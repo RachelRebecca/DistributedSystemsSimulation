@@ -69,7 +69,8 @@ public class MasterReceivingThreadFromSlave extends Thread
         }
         catch (Exception e)
         {
-            System.out.println("Detected Slave exit.");
+            System.out.println("receiving thread: Detected Slave exit. " + e.getMessage());
+            e.printStackTrace();
         }
 
     }

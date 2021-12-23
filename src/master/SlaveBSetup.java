@@ -3,29 +3,49 @@ package master;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class SlaveBSetup extends Thread
 {
-    Socket slaveBSocket = null;
+    ArrayList<Socket> slaveBs;
+    Object slaveB_LOCK;
     ServerSocket slaveBServerSocket;
 
-    public SlaveBSetup(Socket slaveBSocket, ServerSocket slaveBServerSocket)
+    public SlaveBSetup(ArrayList<Socket> slaveBs, Object slaveB_LOCK, ServerSocket slaveBServerSocket)
     {
-        this.slaveBSocket = slaveBSocket;
+        this.slaveBs = slaveBs;
+        this.slaveB_LOCK = slaveB_LOCK;
         this.slaveBServerSocket = slaveBServerSocket;
     }
 
     @Override
     public void run()
     {
-        while (slaveBSocket == null)
+        while (true)
         {
-            try
+            int size;
+            synchronized (slaveB_LOCK)
             {
-                slaveBSocket = slaveBServerSocket.accept();
-            } catch (IOException e)
+                size = slaveBs.size();
+            }
+
+            if (size > 0)
             {
-                continue;
+                break;
+            }
+
+            synchronized (slaveB_LOCK)
+            {
+                try
+                {
+                    Socket slaveB = slaveBServerSocket.accept();
+                    System.out.println("got a slave B socket");
+                    slaveBs.add(slaveB);
+                } catch (IOException e)
+                {
+                    System.out.println("problem with slave a maker");
+                    continue;
+                }
             }
         }
     }
