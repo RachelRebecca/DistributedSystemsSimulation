@@ -4,15 +4,23 @@ import resources.*;
 
 import java.util.ArrayList;
 
+/**
+ * Class simulating Slave doing its job by sleeping for a certain amount of time
+ */
 public class SlaveDoJob extends Thread
 {
+    // list of incomplete jobs from which Slave gets its next job to complete (shared memory)
     private final ArrayList<Job> incompleteJobs;
     private final Object incompleteJobs_LOCK;
 
+    // list of completed jobs to send back to Master after Slave completes job (shared memory)
     private final ArrayList<Job> completedJobs;
     private final Object completedJobs_LOCK;
 
+    // time Slave takes to do an A job
     private final int sleepA;
+
+    // time Slave takes to do a B job
     private final int sleepB;
 
     private final Done isDone;

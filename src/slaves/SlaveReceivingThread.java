@@ -4,11 +4,19 @@ import java.net.*;
 import java.util.*;
 import resources.*;
 
+/**
+ * Slave receives from Master using its Socket
+ * It only receives jobs that need to be completed
+ */
 public class SlaveReceivingThread extends Thread
 {
+    // Socket connecting Slave to Master
     private final Socket slaveSocket;
+
+    // list of incomplete jobs that slave needs to complete (shared memory)
     private final ArrayList<Job> incompleteJobs;
     private final Object incompleteList_LOCK;
+
     private final Done done;
 
     public SlaveReceivingThread(Socket socket, ArrayList<Job> jobsToComplete, Object incompleteJobs_LOCK, Done finished)

@@ -6,11 +6,20 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Slave sends jobs to Master using its Slave Socket
+ * It only sends jobs that it has completed
+ */
 public class SlaveSendingThread extends Thread
 {
+    // Socket connecting Slave to Master
     private final Socket slaveSocket;
+
+    // list of completed jobs which Slave is sending back to Master (shared memory)
     private final ArrayList<Job> completeJobs;
     private final Object completedJobList_LOCK;
+
+
     private final Done done;
 
     public SlaveSendingThread(Socket socket, ArrayList<Job> jobsCompleted, Object completedJob_LOCK, Done finished)
@@ -36,7 +45,7 @@ public class SlaveSendingThread extends Thread
                     numDone = completeJobs.size();
                 }
 
-                // if there is a completed job, store it to myJob
+                // if there is a completed job, store it as myJob
                 if (numDone > 0)
                 {
                     synchronized (completedJobList_LOCK)

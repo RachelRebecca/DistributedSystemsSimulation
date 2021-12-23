@@ -5,6 +5,12 @@ import resources.*;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Creates Slave
+ * - gets Slave Type (A or B) from command line
+ * - makes a Slave Socket
+ * - Starts and joins Slave Threads
+ */
 public class Slave
 {
 
@@ -46,6 +52,7 @@ public class Slave
 
         Done done = new Done();
 
+        // set slave's A job time and B job time
         setABTime(slaveType);
 
         System.out.println("Slave " + slaveType + " Port Number: " + portNumber);
@@ -60,10 +67,12 @@ public class Slave
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
                     completedJobList_LOCK, aTime, bTime, done);
 
+            // start all threads
             sendingThread.start();
             receivingThread.start();
             doJobThread.start();
 
+            // join all threads
             try
             {
                 doJobThread.join();
