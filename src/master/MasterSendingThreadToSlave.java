@@ -5,15 +5,22 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Master sends incomplete jobs to the Slave to complete
+ * Adds jobs to the unfinished list shared memory
+ */
 public class MasterSendingThreadToSlave extends Thread
 {
+    // Socket objects connecting Slave A and Slave B to the Master
     private final Socket slaveA;
     private final Socket slaveB;
 
+    // TimeTracker objects to store current time on each slave
     private final TimeTrackerForSlave timeTrackerForSlaveA;
     private final TimeTrackerForSlave timeTrackerForSlaveB;
     private final Object timeTrackerForSlave_LOCK;
 
+    // list of unfinished jobs that need to be completed by slave (shared memory)
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJobs_LOCK;
 
@@ -37,9 +44,8 @@ public class MasterSendingThreadToSlave extends Thread
     @Override
     public void run()
     {
-        try
-                (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
-                ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream()))
+        try (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
+             ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream()))
         {
             while (!done.getIsFinished())
             {

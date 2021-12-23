@@ -7,14 +7,25 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
+/**
+ * Thread constantly makes new client sockets as any new Client connects to the Master
+ * Starts new MasterReceivingFromClient and MasterSendingToClient threads for each new client socket
+ * Updates shared memory
+ */
 public class MasterToClient extends Thread
 {
-    private final ArrayList<Thread> masterReceivingThreadFromClient = new ArrayList<>();
-    private final ArrayList<Thread> masterSendingThreadToClient = new ArrayList<>();
+    // ArrayList of the current MasterReceivingFromClient and MasterSendingToClient threads
+    private final ArrayList<Thread> masterReceivingThreadFromClient;
+    private final ArrayList<Thread> masterSendingThreadToClient;
 
+    // Master's ServerSocket
     private final ServerSocket serverSocket;
+
+    // list of unfinished jobs received by Client
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJob_LOCK;
+
+    // list of finished jobs to send back to Client
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJob_LOCK;
 
@@ -24,6 +35,7 @@ public class MasterToClient extends Thread
     private final Done done;
     private final Object done_LOCK;
 
+    // list of client sockets that connected to Master
     private final ArrayList<Socket> clientSockets;
     private final Object clientSockets_LOCK;
 
@@ -32,21 +44,21 @@ public class MasterToClient extends Thread
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
                           ArrayList<Job> finishedJobs, Object finishedJob_LOCK, Done isDone, Object done_LOCK)
     {
+        this.clientSockets = clientSockets;
+        this.clientSockets_LOCK = clientSockets_LOCK;
         this.serverSocket = serverSocket;
-
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.finishedJobs = finishedJobs;
         this.finishedJob_LOCK = finishedJob_LOCK;
 
-        clientsToClose = new ArrayList<>();
-        clientsToClose_LOCK = new Object();
+        masterReceivingThreadFromClient = new ArrayList<>();
+        masterSendingThreadToClient = new ArrayList<>();
 
         done = isDone;
         this.done_LOCK = done_LOCK;
-
-        this.clientSockets = clientSockets;
-        this.clientSockets_LOCK = clientSockets_LOCK;
+        clientsToClose = new ArrayList<>();
+        clientsToClose_LOCK = new Object();
     }
 
     public void run()
@@ -55,7 +67,10 @@ public class MasterToClient extends Thread
         {
             while (!done.getIsFinished())
             {
+                // accept a new client Socket
                 Socket clientSocket = serverSocket.accept();
+
+                // assign the clientNumber
                 int clientNumber;
                 synchronized (clientSockets_LOCK)
                 {
@@ -68,6 +83,7 @@ public class MasterToClient extends Thread
                     done.addClient();
                 }
 
+                // Create and start a new MasterReceivingFromClient and MasterSendingToClient thread for this client
                 MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
                         clientSocket, done, done_LOCK, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
                 masterReceivingThreadFromClient.add(mrc);
