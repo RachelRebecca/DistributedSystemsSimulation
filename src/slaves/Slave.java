@@ -20,24 +20,27 @@ public class Slave
     private static int aTime;
     private static int bTime;
 
+    private static final String aPort = "30122";
+    private static final String bPort = "30123";
+
     public static void main(String[] args)
     {
-        if (args.length != 3 || !isInteger(args[1]) || (!args[2].equals(SlaveTypes.A.name()) && !args[2].equals(SlaveTypes.B.name())))
+        if (args.length != 2 || !isValidPort(args[1]))
         {
-            System.err.println("Usage: java Slave <host name> <port number> <slave type>");
+            System.err.println("Usage: java Slave <host name> <port number>");
             System.exit(1);
         }
 
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
 
-        //Set the Slave Type to be A or B
+        //Set the Slave Type to be A or B using port number
         SlaveTypes slaveType = SlaveTypes.NULL;
-        if (args[2].equals(SlaveTypes.A.name()))
+        if (args[1].equals(aPort))
         {
             slaveType = SlaveTypes.A;
         }
-        else if (args[2].equals(SlaveTypes.B.name()))
+        else if (args[1].equals(bPort))
         {
             slaveType = SlaveTypes.B;
         }
@@ -95,18 +98,9 @@ public class Slave
      * @param arg (String)
      * @return boolean if arg can be parsed as an integer
      */
-    private static boolean isInteger(String arg)
+    private static boolean isValidPort(String arg)
     {
-        boolean isInteger = true;
-        try
-        {
-            Integer.parseInt(arg);
-        }
-        catch (Exception e)
-        {
-            isInteger = false;
-        }
-        return isInteger;
+        return (arg.equals(aPort) || arg.equals(bPort));
     }
 
     /**
