@@ -1,7 +1,6 @@
 package testing;
 
-import client.ClientReceivingThread;
-import client.ClientSendingThread;
+import client.*;
 import resources.*;
 
 import java.io.BufferedReader;
@@ -22,21 +21,22 @@ public class Client1
 
     public static void main(String[] args)
     {
-        if (args.length != 3 || isNotInteger(args[1]) || isNotInteger(args[2]))
+        if (args.length != 2 || isNotInteger(args[1]))
         {
-            System.err.println("Usage: java Client <host name> <port number> <id>");
+            System.err.println("Usage: java Client <host name> <port number>");
             System.exit(1);
         }
 
+        // Assign host name, and port number using command line
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
         int jobId = 1;
-        int clientId = Integer.parseInt(args[2]);
 
         // list of jobs that haven't been sent yet to Master
         ArrayList<Job> unsentList = new ArrayList<>();
         Object unsentList_LOCK = new Object();
 
+        // list of jobs that haven't yet been finished
         ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
 
@@ -46,8 +46,7 @@ public class Client1
                 (
                         Socket clientSocket = new Socket(hostName, portNumber);
                         BufferedReader stdIn = // standard input stream to get user's requests
-                                new BufferedReader(
-                                        new InputStreamReader(System.in))
+                                new BufferedReader(new InputStreamReader(System.in))
                 )
         {
             //each client has exactly one sending thread, and one receiving thread
@@ -81,7 +80,7 @@ public class Client1
                     case "a":
                     {
                         // create a new A job, add it to the list of unsent jobs
-                        Job job = new Job(clientId, JobTypes.A, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        Job job = new Job(JobTypes.A, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -93,7 +92,7 @@ public class Client1
                     case "b":
                     {
                         // create a new B job, add it to the list of unsent jobs
-                        Job job = new Job(clientId, JobTypes.B, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
+                        Job job = new Job(JobTypes.B, jobId, JobStatuses.UNFINISHED_SEND_TO_MASTER);
                         synchronized (unsentList_LOCK)
                         {
                             unsentList.add(job);
@@ -105,11 +104,10 @@ public class Client1
                 jobId++;
             }
 
-            //WHEN MASTER SENDS CLIENT DONE JOB, THEN
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
             // send a done job
-            Job job = new Job(clientId, JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
+            Job job = new Job(JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
             synchronized (unsentList_LOCK)
             {
                 unsentList.add(job);
@@ -128,6 +126,7 @@ public class Client1
             while (size > 0);
 
             done.setFinished(true);
+
             // join all threads for the client
             try
             {
@@ -138,6 +137,7 @@ public class Client1
             {
                 System.out.println(e.getMessage());
             }
+
             System.exit(0);
         }
         catch (Exception e)
@@ -145,7 +145,6 @@ public class Client1
             System.out.println(e.getMessage());
         }
     }
-
 
     /**
      * Check if arg is an integer

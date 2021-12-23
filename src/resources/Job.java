@@ -15,9 +15,8 @@ public class Job implements Serializable
     private JobStatuses status;
     private SlaveTypes slaveType;
 
-    public Job (int clientNumber, JobTypes jobType, int Id, JobStatuses jobStatus)
+    public Job (JobTypes jobType, int Id, JobStatuses jobStatus)
     {
-        client = clientNumber;
         type = jobType;
         id = Id;
         status = jobStatus;

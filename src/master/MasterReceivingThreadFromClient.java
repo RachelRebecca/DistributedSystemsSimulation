@@ -46,6 +46,9 @@ public class MasterReceivingThreadFromClient extends Thread
 
             while ((receivedJob = (Job) objectInputStream.readObject()) != null)
             {
+                // set job client number
+                receivedJob.setClient(clientNumber);
+
                 // if the client is exiting, decrement the number of clients connected in the done shared memory
                 if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
                 {
