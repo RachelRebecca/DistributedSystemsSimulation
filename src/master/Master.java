@@ -81,9 +81,6 @@ public class Master
             clientMaker.start();
 
             // use threads to set up both slaves
-//            SlaveASetup aMaker = new SlaveASetup(slaveAs, slaveAs_LOCK, slaveServerSocket1);
-//            SlaveBSetup bMaker = new SlaveBSetup(slaveBs, slaveBs_LOCK, slaveServerSocket2);
-
             SlaveSetup aMaker = new SlaveSetup(slaveAs, slaveAs_LOCK, slaveServerSocket1);
             SlaveSetup bMaker = new SlaveSetup(slaveBs, slaveBs_LOCK, slaveServerSocket2);
 
