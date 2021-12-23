@@ -38,8 +38,7 @@ public class MasterSendingThreadToClient extends Thread
     @Override
     public void run()
     {
-       try (// stream to write text requests to server
-            ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
+       try (ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
        {
            while (!done.getIsFinished())
            {
