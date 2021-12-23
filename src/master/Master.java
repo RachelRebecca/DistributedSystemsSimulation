@@ -69,7 +69,7 @@ public class Master
 
                         ServerSocket slaveServerSocket1 = new ServerSocket(slaveAPortNumber);
 
-                        ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber);
+                        ServerSocket slaveServerSocket2 = new ServerSocket(slaveBPortNumber)
                 )
         {
             // create and start a MasterToClient thread, which constantly accepts incoming Clients
