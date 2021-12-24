@@ -37,7 +37,6 @@ public class MasterToClient extends Thread
     private final Done done;
     private final Object done_LOCK;
 
-
     private final ArrayList<Integer> clientsToClose;
     private final Object clientsToClose_LOCK;
 
@@ -70,6 +69,13 @@ public class MasterToClient extends Thread
             {
                 // accept a new client Socket
                 Socket clientSocket = serverSocket.accept();
+                synchronized (done_LOCK)
+                {
+                    if (!done.atLeastOneJoined())
+                    {
+                        done.setAtLeastOneJoined(true);
+                    }
+                }
 
                 // assign the clientNumber
                 int clientNumber;
@@ -96,7 +102,7 @@ public class MasterToClient extends Thread
                 msc.start();
 
 
-                synchronized (clientsToClose_LOCK)
+                /*synchronized (clientsToClose_LOCK)
                 {
                     while (clientsToClose.size() > 0)
                     {
@@ -106,48 +112,48 @@ public class MasterToClient extends Thread
                         {
                             masterReceivingThreadFromClient.get(clientToClose - 1).join();
                             masterSendingThreadToClient.get(clientToClose - 1).join();
-                        }
-                        catch (Exception e)
+                        } catch (Exception e)
                         {
                             System.out.println("Problem closing threads when a client exited: " + e.getMessage());
                         }
                     }
-                }
+                }*/
+            }
 
-                if (done.isFinished())
+            System.out.println("reached this point in client maker. ");
+
+            for (Thread receiving : masterReceivingThreadFromClient)
+            {
+                try
                 {
-                    done.setFinished(true);
-                    for (Thread sending : masterSendingThreadToClient)
-                    {
-                        try
-                        {
-                            sending.join();
-                        }
-                        catch (Exception e)
-                        {
-                            System.out.println(e.getMessage());
-                        }
-                    }
-
-                    for (Thread receiving : masterReceivingThreadFromClient)
-                    {
-                        try
-                        {
-                            receiving.join();
-                        }
-                        catch (Exception e)
-                        {
-                            System.out.println(e.getMessage());
-                        }
-                    }
+                    receiving.join();
+                } catch (Exception e)
+                {
+                    System.out.println(e.getMessage());
                 }
             }
+
+            System.out.println("Joined all receiving threads.");
+
+            for (Thread sending : masterSendingThreadToClient)
+            {
+                try
+                {
+                    sending.join();
+                } catch (Exception e)
+                {
+                    System.out.println(e.getMessage());
+                }
+            }
+
+            System.out.println("Joined all sending threads.");
+
+
         }
+
         catch (Exception e)
         {
             System.out.println(e.getMessage());
         }
     }
-
-
 }

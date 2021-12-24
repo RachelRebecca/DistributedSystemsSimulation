@@ -132,21 +132,50 @@ public class Master
 
 
             // keep checking until number of clients currently connected is zero, and then set done flag to true
+            //while (!done.isFinished());
+            //{
+                /*synchronized (done_LOCK)
+                {
+                    if (done.getClientNumber() == 0)
+                    {
+                        break;
+                        //done.setFinished(true);
+                    }
+                }*/
+            //}
+
             while (!done.isFinished())
             {
-                if (done.getClientNumber() == 0)
+                int clientSocketSize;
+                synchronized (clientSockets_LOCK)
                 {
-                    done.setFinished(true);
+                    clientSocketSize = clientSockets.size();
+                }
+
+                int clientExitNumber;
+                synchronized (done_LOCK)
+                {
+                    clientExitNumber = done.getClientExitNumber();
+                    if (done.atLeastOneJoined() && (clientExitNumber == clientSocketSize))
+                    {
+                        done.setFinished(true);
+                        System.out.println("Set done to finished.");
+                    }
                 }
             }
 
+            System.out.println("About to join other threads.");
             //join all the other Threads
             try
             {
                 receivingFromSlaveA.join();
+                System.out.println("joined receiving a thread.");
                 receivingFromSlaveB.join();
-                clientMaker.join();
+                System.out.println("joined receiving b thread.");
                 sendingToSlave.join();
+                System.out.println("joined sending to slave thread");
+                clientMaker.join();
+                System.out.println("joined client maker thread.");
             }
             catch (Exception e)
             {

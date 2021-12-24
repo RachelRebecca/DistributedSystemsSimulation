@@ -1,7 +1,7 @@
 package testing;
 
-import client.*;
 import resources.*;
+import client.*;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 /**
  * Creates Client
- * - make a Client Socket, and get the jobs from the User
+ * - make a Client Socket, and get the jobs from the user
  * - start and join Client Threads
  */
 public class Client1
@@ -19,17 +19,20 @@ public class Client1
     // IP address = "127.0.0.1"
     // port = 30121
 
+    private static final String cPort = "30121";
+
     public static void main(String[] args)
     {
-        if (args.length != 2 || isNotInteger(args[1]))
+        if (args.length != 2 || !isValidPort(args[1]))
         {
             System.err.println("Usage: java Client <host name> <port number>");
             System.exit(1);
         }
 
-        // Assign host name, and port number using command line
+        // Assign host name and port number using command line
         String hostName = args[0];
         int portNumber = Integer.parseInt(args[1]);
+
         int jobId = 1;
 
         // list of jobs that haven't been sent yet to Master
@@ -40,6 +43,7 @@ public class Client1
         ArrayList<Job> unfinishedList = new ArrayList<>();
         Object unfinishedList_LOCK = new Object();
 
+        // Done Object to signal to Threads when exiting
         Done done = new Done();
 
         try
@@ -113,6 +117,8 @@ public class Client1
                 unsentList.add(job);
             }
 
+            // get size of unfinished list
+            // when size is zero, there are no more unfinished jobs and Client can safely exit
             int size;
             do
             {
@@ -125,9 +131,10 @@ public class Client1
             }
             while (size > 0);
 
+            // set Client Done flag to true
             done.setFinished(true);
 
-            // join all threads for the client
+            // join all Threads for the client
             try
             {
                 sendingThread.join();
@@ -151,17 +158,8 @@ public class Client1
      * @param arg (String)
      * @return boolean if arg can be parsed as an integer
      */
-    private static boolean isNotInteger(String arg)
+    private static boolean isValidPort(String arg)
     {
-        boolean isInteger = true;
-        try
-        {
-            Integer.parseInt(arg);
-        }
-        catch (Exception e)
-        {
-            isInteger = false;
-        }
-        return !isInteger;
+        return (arg.equals(cPort));
     }
 }
