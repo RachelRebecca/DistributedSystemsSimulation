@@ -23,6 +23,7 @@ public class SlaveDoJob extends Thread
     // time Slave takes to do a B job
     private final int sleepB;
 
+    // Done Object - signals when to exit
     private final Done done;
 
     public SlaveDoJob(ArrayList<Job> incompleteJobs, Object incompleteJobs_LOCK, ArrayList<Job> completedJobs,

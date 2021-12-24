@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 /**
  * Master receives unfinished jobs from the Client using the client socket
+ * It also receives Client Done Jobs indicating that client is exiting
  * Adds unfinished jobs to shared memory
  */
 public class MasterReceivingThreadFromClient extends Thread
@@ -15,6 +16,7 @@ public class MasterReceivingThreadFromClient extends Thread
     // Socket connecting Client to Master
     private final Socket clientSocket;
 
+    // Done Object - the signal to exit the Thread
     private final Done done;
     private final Object done_LOCK;
 
@@ -23,18 +25,19 @@ public class MasterReceivingThreadFromClient extends Thread
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJob_LOCK;
 
+    // unique client ID assigned to the Client connected to this MasterReceivingThread
     private final int clientNumber;
 
 
-    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, Object done_LOCK, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
-                                           int clientNumber)
+    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, Object done_LOCK,
+                                           ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK, int clientNumber)
     {
         this.clientSocket = clientSocket;
+        this.done = done;
+        this.done_LOCK = done_LOCK;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
-        this.done = done;
         this.clientNumber = clientNumber;
-        this.done_LOCK = done_LOCK;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class MasterReceivingThreadFromClient extends Thread
                         done.removeClient();
                     }
                 }
+                // otherwise, if got an unfinished job
                 else if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
                     //update job status

@@ -24,7 +24,6 @@ public class MasterReceivingThreadFromSlave extends Thread
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
 
-
     public MasterReceivingThreadFromSlave(Socket slaveSocket, TimeTrackerForSlave timeTrackerForSlaveA,
                                           TimeTrackerForSlave timeTrackerForSlaveB, Object timeTracker_LOCK,
                                           ArrayList<Job> finishedJobs, Object finishedJobs_LOCK)

@@ -23,6 +23,7 @@ public class ClientSendingThread extends Thread
     private final ArrayList<Job> unfinishedList;
     private final Object unfinished_LOCK;
 
+    // Done object - the signal to exit Thread
     private final Done done;
 
     public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,

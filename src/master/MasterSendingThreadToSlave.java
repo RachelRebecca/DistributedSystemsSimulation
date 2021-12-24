@@ -24,6 +24,7 @@ public class MasterSendingThreadToSlave extends Thread
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJobs_LOCK;
 
+    // Done Object - the signal to exit the Thread
     private final Done done;
 
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,

@@ -13,13 +13,17 @@ import java.util.ArrayList;
  */
 public class Master
 {
+    private static final String cPort = "30121";
+    private static final String aPort = "30122";
+    private static final String bPort = "30123";
+
     public static void main(String[] args)
     {
 
         // Hard code in port number if necessary:
         // args = new String[] {"30121", "30122", "30123"};
 
-        if (args.length != 3 || isNotInteger(args[0]) || isNotInteger(args[1]) || isNotInteger(args[2]))
+        if (args.length != 3 || !isValidPorts(args[0], args[1], args[2]))
         {
             System.err.println("Usage: java Master <Client port number> <Slave A port number> <Slave B port number>");
             System.exit(1);
@@ -60,6 +64,7 @@ public class Master
         Object slaveBs_LOCK = new Object();
         Socket slaveB;
 
+        // Done Object to signal Master exiting to threads
         Done done = new Done();
         Object done_LOCK = new Object();
 
@@ -85,7 +90,7 @@ public class Master
             aMaker.start();
             bMaker.start();
 
-            // join slave maker threads
+            // join Slave Maker Threads
             try
             {
                 aMaker.join();
@@ -110,7 +115,7 @@ public class Master
                 }
             }
 
-            // create and start two different MasterReceivingFromSlave threads (one for Slave A and one for Slave B)
+            // create and start two different MasterReceivingFromSlave Threads (one for Slave A and one for Slave B)
             MasterReceivingThreadFromSlave receivingFromSlaveA = new MasterReceivingThreadFromSlave(slaveA,
                     timeTrackerA, timeTrackerB, timeTracker_LOCK, finishedJobs, finishedJob_LOCK);
             MasterReceivingThreadFromSlave receivingFromSlaveB = new MasterReceivingThreadFromSlave(slaveB,
@@ -119,12 +124,14 @@ public class Master
             receivingFromSlaveA.start();
             receivingFromSlaveB.start();
 
-            // create and start a MasterSendingToSlave thread
+            // create and start a MasterSendingToSlave Thread
             MasterSendingThreadToSlave sendingToSlave = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
                     timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, done);
 
             sendingToSlave.start();
 
+
+            // keep checking until number of clients currently connected is zero, and then set done flag to true
             while (!done.isFinished())
             {
                 if (done.getClientNumber() == 0)
@@ -133,7 +140,7 @@ public class Master
                 }
             }
 
-            //join all the other threads
+            //join all the other Threads
             try
             {
                 receivingFromSlaveA.join();
@@ -154,23 +161,15 @@ public class Master
     }
 
     /**
-     * Check if arg is an integer
-     *
-     * @param arg (String)
-     * @return boolean if arg can be parsed as an integer
+     * Check if command line argument entered valid port numbers
+     * @param client - attempted Client port number
+     * @param slaveA - attempted Slave A port number
+     * @param slaveB - attempted Slave B port number
+     * @return boolean - true if all port numbers are valid, otherwise false
      */
-    private static boolean isNotInteger(String arg)
+    private static boolean isValidPorts(String client, String slaveA, String slaveB)
     {
-        boolean isInteger = true;
-        try
-        {
-            Integer.parseInt(arg);
-        }
-        catch (Exception e)
-        {
-            isInteger = false;
-        }
-        return !isInteger;
+        return (client.equals(cPort) && slaveA.equals(aPort) && slaveB.equals(bPort));
     }
 }
 

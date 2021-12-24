@@ -18,6 +18,10 @@ public class MasterToClient extends Thread
     private final ArrayList<Thread> masterReceivingThreadFromClient;
     private final ArrayList<Thread> masterSendingThreadToClient;
 
+    // list of client sockets that connected to Master
+    private final ArrayList<Socket> clientSockets;
+    private final Object clientSockets_LOCK;
+
     // Master's ServerSocket
     private final ServerSocket serverSocket;
 
@@ -29,16 +33,13 @@ public class MasterToClient extends Thread
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJob_LOCK;
 
-    private final ArrayList<Integer> clientsToClose;
-    private final Object clientsToClose_LOCK;
-
+    // Done Object signaling Threads when to exit
     private final Done done;
     private final Object done_LOCK;
 
-    // list of client sockets that connected to Master
-    private final ArrayList<Socket> clientSockets;
-    private final Object clientSockets_LOCK;
 
+    private final ArrayList<Integer> clientsToClose;
+    private final Object clientsToClose_LOCK;
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
@@ -112,11 +113,6 @@ public class MasterToClient extends Thread
                         }
                     }
                 }
-
-                // check clientToClose arrayList
-                // if there's something in it
-                    // close the relevant sending and receiving threads - NOT the client socket
-                    // remove that client number from the arrayList
 
                 if (done.isFinished())
                 {

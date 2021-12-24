@@ -19,7 +19,7 @@ public class SlaveSendingThread extends Thread
     private final ArrayList<Job> completeJobs;
     private final Object completedJobList_LOCK;
 
-
+    // Done Object - signal when to exit Thread
     private final Done done;
 
     public SlaveSendingThread(Socket socket, ArrayList<Job> jobsCompleted, Object completedJob_LOCK, Done finished)

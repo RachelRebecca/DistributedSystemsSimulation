@@ -53,6 +53,7 @@ public class Slave
         ArrayList<Job> completedJobList = new ArrayList<>();
         Object completedJobList_LOCK = new Object();
 
+        // Done Object to signal when Threads should exit
         Done done = new Done();
 
         // set slave's A job time and B job time
@@ -62,20 +63,20 @@ public class Slave
 
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
-
+            // create sending and receiving Threads for Slave
             SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done);
             SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK);
 
-            // there is only ever one doJob thread, otherwise a slave could do 2 jobs at once
+            // there is only ever one DoJob Thread, otherwise a slave could do 2 jobs at once
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
                     completedJobList_LOCK, aTime, bTime, done);
 
-            // start all threads
+            // start all Threads
             sendingThread.start();
             receivingThread.start();
             doJobThread.start();
 
-            // join all threads
+            // join all Threads
             try
             {
                 doJobThread.join();
@@ -94,9 +95,9 @@ public class Slave
     }
 
     /**
-     * Check if arg is an integer
+     * Check if arg is a valid Slave port number
      * @param arg (String)
-     * @return boolean if arg can be parsed as an integer
+     * @return boolean if arg is one of the valid Slave port numbers
      */
     private static boolean isValidPort(String arg)
     {
