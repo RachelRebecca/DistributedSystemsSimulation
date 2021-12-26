@@ -37,8 +37,10 @@ public class MasterToClient extends Thread
     private final Done done;
     private final Object done_LOCK;
 
+    /*
     private final ArrayList<Integer> clientsToClose;
     private final Object clientsToClose_LOCK;
+     */
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
@@ -57,8 +59,10 @@ public class MasterToClient extends Thread
 
         this.done = done;
         this.done_LOCK = done_LOCK;
+        /*
         clientsToClose = new ArrayList<>();
         clientsToClose_LOCK = new Object();
+         */
     }
 
     public void run()
@@ -97,7 +101,7 @@ public class MasterToClient extends Thread
 
                 // Create and start a new MasterReceivingFromClient and MasterSendingToClient thread for this client
                 MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
-                        clientSocket, done, done_LOCK, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
+                        clientSocket, /*done, done_LOCK,*/ unfinishedJobs, unfinishedJob_LOCK, clientNumber);
                 masterReceivingThreadFromClient.add(mrc);
                 mrc.start();
 

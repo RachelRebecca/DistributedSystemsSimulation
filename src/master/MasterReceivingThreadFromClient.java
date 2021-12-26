@@ -16,9 +16,11 @@ public class MasterReceivingThreadFromClient extends Thread
     // Socket connecting Client to Master
     private final Socket clientSocket;
 
+    /*
     // Done Object - the signal to exit the Thread
     private final Done done;
     private final Object done_LOCK;
+     */
 
     // list of unfinished jobs (shared memory)
     // received by Client and sent to Slave to complete
@@ -29,12 +31,14 @@ public class MasterReceivingThreadFromClient extends Thread
     private final int clientNumber;
 
 
-    public MasterReceivingThreadFromClient(Socket clientSocket, Done done, Object done_LOCK,
+    public MasterReceivingThreadFromClient(Socket clientSocket, /*Done done, Object done_LOCK,*/
                                            ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK, int clientNumber)
     {
         this.clientSocket = clientSocket;
+        /*
         this.done = done;
         this.done_LOCK = done_LOCK;
+         */
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.clientNumber = clientNumber;
