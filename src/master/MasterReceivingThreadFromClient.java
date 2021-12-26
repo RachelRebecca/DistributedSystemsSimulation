@@ -16,12 +16,6 @@ public class MasterReceivingThreadFromClient extends Thread
     // Socket connecting Client to Master
     private final Socket clientSocket;
 
-    /*
-    // Done Object - the signal to exit the Thread
-    private final Done done;
-    private final Object done_LOCK;
-     */
-
     // list of unfinished jobs (shared memory)
     // received by Client and sent to Slave to complete
     private final ArrayList<Job> unfinishedJobs;
@@ -31,14 +25,12 @@ public class MasterReceivingThreadFromClient extends Thread
     private final int clientNumber;
 
 
-    public MasterReceivingThreadFromClient(Socket clientSocket, /*Done done, Object done_LOCK,*/
-                                           ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK, int clientNumber)
+    public MasterReceivingThreadFromClient(Socket clientSocket,
+                                           ArrayList<Job> unfinishedJobs,
+                                           Object unfinishedJob_LOCK,
+                                           int clientNumber)
     {
         this.clientSocket = clientSocket;
-        /*
-        this.done = done;
-        this.done_LOCK = done_LOCK;
-         */
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJob_LOCK = unfinishedJob_LOCK;
         this.clientNumber = clientNumber;
@@ -56,16 +48,7 @@ public class MasterReceivingThreadFromClient extends Thread
                 // set job client number
                 receivedJob.setClient(clientNumber);
 
-                // if the client is exiting, decrement the number of clients connected in the done shared memory
-                /*if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
-                {
-                    synchronized (done_LOCK)
-                    {
-                        done.removeClient();
-                    }
-                }
-                // otherwise, if got an unfinished job
-                else */if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
+                if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
                     //update job status
                     receivedJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);
@@ -83,14 +66,6 @@ public class MasterReceivingThreadFromClient extends Thread
         catch (Exception e)
         {
             System.out.println("Detected Client exit.");
-
-            /*
-            // Since Client exited, increase Client Exit Number to compare to number of connected clients
-            synchronized (done_LOCK)
-            {
-                done.addClientExitNumber();
-            }
-             */
         }
     }
 }

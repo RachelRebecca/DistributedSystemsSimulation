@@ -37,10 +37,7 @@ public class MasterToClient extends Thread
     private final Done done;
     private final Object done_LOCK;
 
-    /*
-    private final ArrayList<Integer> clientsToClose;
-    private final Object clientsToClose_LOCK;
-     */
+    private boolean continueLoop;
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
                           ServerSocket serverSocket, ArrayList<Job> unfinishedJobs, Object unfinishedJob_LOCK,
@@ -59,30 +56,18 @@ public class MasterToClient extends Thread
 
         this.done = done;
         this.done_LOCK = done_LOCK;
-        /*
-        clientsToClose = new ArrayList<>();
-        clientsToClose_LOCK = new Object();
-         */
+
+        continueLoop = true;
     }
 
     public void run()
     {
         try
         {
-            while (!done.isFinished())
+            while (continueLoop)
             {
                 // accept a new client Socket
                 Socket clientSocket = serverSocket.accept();
-
-                /*
-                synchronized (done_LOCK)
-                {
-                    if (!done.atLeastOneJoined())
-                    {
-                        done.setAtLeastOneJoined(true);
-                    }
-                }
-                 */
 
                 // assign the clientNumber
                 int clientNumber;
@@ -92,16 +77,9 @@ public class MasterToClient extends Thread
                     clientNumber = clientSockets.size();
                 }
 
-                /*
-                synchronized (done_LOCK)
-                {
-                    done.addClient();
-                }
-                 */
-
                 // Create and start a new MasterReceivingFromClient and MasterSendingToClient thread for this client
                 MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(
-                        clientSocket, /*done, done_LOCK,*/ unfinishedJobs, unfinishedJob_LOCK, clientNumber);
+                        clientSocket, unfinishedJobs, unfinishedJob_LOCK, clientNumber);
                 masterReceivingThreadFromClient.add(mrc);
                 mrc.start();
 
@@ -110,23 +88,13 @@ public class MasterToClient extends Thread
                 masterSendingThreadToClient.add(msc);
                 msc.start();
 
-
-                /*synchronized (clientsToClose_LOCK)
+                synchronized (done_LOCK)
                 {
-                    while (clientsToClose.size() > 0)
+                    if (done.isFinished())
                     {
-                        int clientToClose = clientsToClose.get(0);
-                        clientsToClose.remove(0);
-                        try
-                        {
-                            masterReceivingThreadFromClient.get(clientToClose - 1).join();
-                            masterSendingThreadToClient.get(clientToClose - 1).join();
-                        } catch (Exception e)
-                        {
-                            System.out.println("Problem closing threads when a client exited: " + e.getMessage());
-                        }
+                        continueLoop = false;
                     }
-                }*/
+                }
             }
 
             for (Thread receiving : masterReceivingThreadFromClient)

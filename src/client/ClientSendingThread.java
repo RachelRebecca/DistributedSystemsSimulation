@@ -70,10 +70,7 @@ public class ClientSendingThread extends Thread
                     // add the job to the unfinished list
                     synchronized (unfinished_LOCK)
                     {
-                       // if (currJob.getStatus() != JobStatuses.CLIENT_DONE)
-                       // {
-                            unfinishedList.add(currJob);
-                      //  }
+                        unfinishedList.add(currJob);
                     }
                 }
             }

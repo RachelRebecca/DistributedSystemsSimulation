@@ -130,43 +130,6 @@ public class Master
 
             sendingToSlave.start();
 
-
-            // keep checking until number of clients currently connected is zero, and then set done flag to true
-            //while (!done.isFinished());
-            //{
-                /*synchronized (done_LOCK)
-                {
-                    if (done.getClientNumber() == 0)
-                    {
-                        break;
-                        //done.setFinished(true);
-                    }
-                }*/
-            //}
-
-            /*
-            // keep checking until number of exited clients is equal to number of connected clients
-            while (!done.isFinished())
-            {
-                int clientSocketSize;
-                synchronized (clientSockets_LOCK)
-                {
-                    clientSocketSize = clientSockets.size();
-                }
-
-                int clientExitNumber;
-                synchronized (done_LOCK)
-                {
-                    clientExitNumber = done.getClientExitNumber();
-                    if (done.atLeastOneJoined() && (clientExitNumber == clientSocketSize))
-                    {
-                        System.out.println("No more clients currently connected to Master. ");
-                        done.setFinished(true);
-                    }
-                }
-            }
-             */
-
             //join all the other Threads
             try
             {
