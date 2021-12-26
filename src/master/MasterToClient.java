@@ -69,6 +69,8 @@ public class MasterToClient extends Thread
             {
                 // accept a new client Socket
                 Socket clientSocket = serverSocket.accept();
+
+                /*
                 synchronized (done_LOCK)
                 {
                     if (!done.atLeastOneJoined())
@@ -76,6 +78,7 @@ public class MasterToClient extends Thread
                         done.setAtLeastOneJoined(true);
                     }
                 }
+                 */
 
                 // assign the clientNumber
                 int clientNumber;

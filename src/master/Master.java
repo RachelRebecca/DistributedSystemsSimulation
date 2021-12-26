@@ -144,6 +144,7 @@ public class Master
                 }*/
             //}
 
+            /*
             // keep checking until number of exited clients is equal to number of connected clients
             while (!done.isFinished())
             {
@@ -159,10 +160,12 @@ public class Master
                     clientExitNumber = done.getClientExitNumber();
                     if (done.atLeastOneJoined() && (clientExitNumber == clientSocketSize))
                     {
+                        System.out.println("No more clients currently connected to Master. ");
                         done.setFinished(true);
                     }
                 }
             }
+             */
 
             //join all the other Threads
             try
