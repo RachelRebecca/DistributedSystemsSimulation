@@ -110,12 +110,14 @@ public class Client1
 
             System.out.println("Thank you. We will exit when all your jobs are done.");
 
+            /*
             // send a done job
             Job job = new Job(JobTypes.NULL, jobId + 1, JobStatuses.CLIENT_DONE);
             synchronized (unsentList_LOCK)
             {
                 unsentList.add(job);
             }
+             */
 
             // get size of unfinished list
             // when size is zero, there are no more unfinished jobs and Client can safely exit

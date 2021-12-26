@@ -3,14 +3,14 @@ package resources;
 public class Done
 {
     boolean finished;
-    int clientNumber;
+   // int clientNumber;
     int clientExitNumber;
     boolean atLeastOneJoined;
 
     public Done()
     {
         finished = false;
-        clientNumber = 0;
+        //clientNumber = 0;
         clientExitNumber = 0;
         atLeastOneJoined = false;
     }
@@ -25,6 +25,7 @@ public class Done
         return finished;
     }
 
+    /*
     public int getClientNumber()
     {
         return clientNumber;
@@ -39,6 +40,7 @@ public class Done
     {
         clientNumber--;
     }
+     */
 
     public void addClientExitNumber()
     {

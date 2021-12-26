@@ -85,10 +85,12 @@ public class MasterToClient extends Thread
                     clientNumber = clientSockets.size();
                 }
 
+                /*
                 synchronized (done_LOCK)
                 {
                     done.addClient();
                 }
+                 */
 
                 // Create and start a new MasterReceivingFromClient and MasterSendingToClient thread for this client
                 MasterReceivingThreadFromClient mrc = new MasterReceivingThreadFromClient(

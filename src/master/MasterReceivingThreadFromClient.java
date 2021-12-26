@@ -53,7 +53,7 @@ public class MasterReceivingThreadFromClient extends Thread
                 receivedJob.setClient(clientNumber);
 
                 // if the client is exiting, decrement the number of clients connected in the done shared memory
-                if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
+                /*if (receivedJob.getStatus() == JobStatuses.CLIENT_DONE)
                 {
                     synchronized (done_LOCK)
                     {
@@ -61,7 +61,7 @@ public class MasterReceivingThreadFromClient extends Thread
                     }
                 }
                 // otherwise, if got an unfinished job
-                else if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
+                else */if (receivedJob.getStatus() == JobStatuses.UNFINISHED_SEND_TO_MASTER)
                 {
                     //update job status
                     receivedJob.setStatus(JobStatuses.UNFINISHED_SEND_TO_SLAVE);

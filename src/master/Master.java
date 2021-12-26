@@ -160,7 +160,6 @@ public class Master
                     if (done.atLeastOneJoined() && (clientExitNumber == clientSocketSize))
                     {
                         done.setFinished(true);
-                        System.out.println("Set done to finished.");
                     }
                 }
             }
@@ -168,10 +167,10 @@ public class Master
             //join all the other Threads
             try
             {
+                clientMaker.join();
                 receivingFromSlaveA.join();
                 receivingFromSlaveB.join();
                 sendingToSlave.join();
-                clientMaker.join();
             }
             catch (Exception e)
             {
