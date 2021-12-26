@@ -25,9 +25,13 @@ public class ClientSendingThread extends Thread
 
     // Done object - the signal to exit Thread
     private final Done done;
+    private final Object done_LOCK;
+
+    // boolean flag to continue while loop
+    private boolean continueLoop;
 
     public ClientSendingThread(Socket clientSocket, ArrayList<Job> unsentList, Object unsent_LOCK,
-                               ArrayList<Job> unfinishedList, Object unfinished_LOCK, Done done)
+                               ArrayList<Job> unfinishedList, Object unfinished_LOCK, Done done, Object done_LOCK)
     {
         this.clientSocket = clientSocket;
         this.unsentList = unsentList;
@@ -35,6 +39,8 @@ public class ClientSendingThread extends Thread
         this.unfinishedList = unfinishedList;
         this.unfinished_LOCK = unfinished_LOCK;
         this.done = done;
+        this.done_LOCK = done_LOCK;
+        this.continueLoop = true;
     }
 
     @Override
@@ -43,7 +49,7 @@ public class ClientSendingThread extends Thread
         try (// stream to write text requests to Master
              ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
         {
-            while (!done.isFinished())
+            while (continueLoop)
             {
                 Job currJob;
 
@@ -71,6 +77,14 @@ public class ClientSendingThread extends Thread
                     synchronized (unfinished_LOCK)
                     {
                         unfinishedList.add(currJob);
+                    }
+                }
+
+                synchronized (done_LOCK)
+                {
+                    if (done.isFinished())
+                    {
+                        continueLoop = false;
                     }
                 }
             }

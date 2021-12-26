@@ -16,48 +16,63 @@ public class SlaveSendingThread extends Thread
     private final Socket slaveSocket;
 
     // list of completed jobs which Slave is sending back to Master (shared memory)
-    private final ArrayList<Job> completeJobs;
-    private final Object completedJobList_LOCK;
+    private final ArrayList<Job> finishedJobs;
+    private final Object finishedJobs_LOCK;
 
     // Done Object - signal when to exit Thread
     private final Done done;
+    private final Object done_LOCK;
 
-    public SlaveSendingThread(Socket socket, ArrayList<Job> jobsCompleted, Object completedJob_LOCK, Done finished)
+    // boolean flag to continue while loop
+    private boolean continueLoop;
+
+    public SlaveSendingThread(Socket socket, ArrayList<Job> finishedJobs, Object finishedJobs_LOCK,
+                              Done done, Object done_LOCK)
     {
         slaveSocket = socket;
-        completeJobs = jobsCompleted;
-        completedJobList_LOCK = completedJob_LOCK;
-        done = finished;
+        this.finishedJobs = finishedJobs;
+        this.finishedJobs_LOCK = finishedJobs_LOCK;
+        this.done = done;
+        this.done_LOCK = done_LOCK;
+        this.continueLoop = true;
     }
 
     public void run()
     {
         try (ObjectOutputStream requestWriter = new ObjectOutputStream(slaveSocket.getOutputStream()))
         {
-            while (!done.isFinished())
+            while (continueLoop)
             {
                 Job myJob;
 
                 // get length of completed jobs list
                 int numDone;
-                synchronized (completedJobList_LOCK)
+                synchronized (finishedJobs_LOCK)
                 {
-                    numDone = completeJobs.size();
+                    numDone = finishedJobs.size();
                 }
 
                 // if there is a completed job, store it as myJob
                 if (numDone > 0)
                 {
-                    synchronized (completedJobList_LOCK)
+                    synchronized (finishedJobs_LOCK)
                     {
-                        myJob = completeJobs.get(0);
-                        completeJobs.remove(0);
+                        myJob = finishedJobs.get(0);
+                        finishedJobs.remove(0);
                     }
 
                     //update status and send the completed job to the master
                     System.out.println("Sending a job: " + myJob.getClient() + "." + myJob.getType() + myJob.getId() +"\n");
                     myJob.setStatus(JobStatuses.FINISHED_SEND_TO_MASTER);
                     requestWriter.writeObject(myJob);
+                }
+
+                synchronized (done_LOCK)
+                {
+                    if (done.isFinished())
+                    {
+                        continueLoop = false;
+                    }
                 }
             }
         }

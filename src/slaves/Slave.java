@@ -55,6 +55,7 @@ public class Slave
 
         // Done Object to signal when Threads should exit
         Done done = new Done();
+        Object done_LOCK = new Object();
 
         // set slave's A job time and B job time
         setABTime(slaveType);
@@ -64,12 +65,13 @@ public class Slave
         try (Socket slaveSocket = new Socket(hostName, portNumber))
         {
             // create sending and receiving Threads for Slave
-            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList, completedJobList_LOCK, done);
+            SlaveSendingThread sendingThread = new SlaveSendingThread(slaveSocket, completedJobList,
+                    completedJobList_LOCK, done, done_LOCK);
             SlaveReceivingThread receivingThread = new SlaveReceivingThread(slaveSocket, incompleteJobList, incompleteJob_LOCK);
 
             // there is only ever one DoJob Thread, otherwise a slave could do 2 jobs at once
             Thread doJobThread = new SlaveDoJob(incompleteJobList, incompleteJob_LOCK, completedJobList,
-                    completedJobList_LOCK, aTime, bTime, done);
+                    completedJobList_LOCK, aTime, bTime, done, done_LOCK);
 
             // start all Threads
             sendingThread.start();

@@ -44,6 +44,7 @@ public class Client
 
         // Done Object to signal to Threads when exiting
         Done done = new Done();
+        Object done_LOCK = new Object();
 
         try
                 (
@@ -54,7 +55,7 @@ public class Client
         {
             //each client has exactly one sending thread, and one receiving thread
             ClientSendingThread sendingThread = new ClientSendingThread(clientSocket, unsentList, unsentList_LOCK,
-                    unfinishedList, unfinishedList_LOCK, done);
+                    unfinishedList, unfinishedList_LOCK, done, done_LOCK);
             ClientReceivingThread receivingThread = new ClientReceivingThread(clientSocket, unfinishedList, unfinishedList_LOCK);
 
             //start threads

@@ -57,8 +57,7 @@ public class MasterToClient extends Thread
 
         this.done = done;
         this.done_LOCK = done_LOCK;
-
-        continueLoop = true;
+        this.continueLoop = true;
     }
 
     public void run()
