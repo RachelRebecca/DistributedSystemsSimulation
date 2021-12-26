@@ -120,8 +120,6 @@ public class MasterToClient extends Thread
                 }*/
             }
 
-            System.out.println("reached this point in client maker. ");
-
             for (Thread receiving : masterReceivingThreadFromClient)
             {
                 try
@@ -133,8 +131,6 @@ public class MasterToClient extends Thread
                 }
             }
 
-            System.out.println("Joined all receiving threads.");
-
             for (Thread sending : masterSendingThreadToClient)
             {
                 try
@@ -145,10 +141,6 @@ public class MasterToClient extends Thread
                     System.out.println(e.getMessage());
                 }
             }
-
-            System.out.println("Joined all sending threads.");
-
-
         }
 
         catch (Exception e)

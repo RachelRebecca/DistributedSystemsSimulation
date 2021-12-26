@@ -79,6 +79,8 @@ public class MasterReceivingThreadFromClient extends Thread
         catch (Exception e)
         {
             System.out.println("Detected Client exit.");
+
+            // Since Client exited, increase Client Exit Number to compare to number of connected clients
             synchronized (done_LOCK)
             {
                 done.addClientExitNumber();

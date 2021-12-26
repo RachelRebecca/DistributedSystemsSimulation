@@ -144,6 +144,7 @@ public class Master
                 }*/
             //}
 
+            // keep checking until number of exited clients is equal to number of connected clients
             while (!done.isFinished())
             {
                 int clientSocketSize;
@@ -164,18 +165,13 @@ public class Master
                 }
             }
 
-            System.out.println("About to join other threads.");
             //join all the other Threads
             try
             {
                 receivingFromSlaveA.join();
-                System.out.println("joined receiving a thread.");
                 receivingFromSlaveB.join();
-                System.out.println("joined receiving b thread.");
                 sendingToSlave.join();
-                System.out.println("joined sending to slave thread");
                 clientMaker.join();
-                System.out.println("joined client maker thread.");
             }
             catch (Exception e)
             {

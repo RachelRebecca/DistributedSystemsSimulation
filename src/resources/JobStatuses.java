@@ -9,7 +9,7 @@ public enum JobStatuses
     UNFINISHED_SEND_TO_SLAVE ("job sent to slave from master"),     //master to slave
     FINISHED_SEND_TO_MASTER ("job sent to master from slave"),      //slave to master
     FINISHED_SEND_TO_CLIENT ("finished job sent to client"),        //master to client
-    CLIENT_DONE ("client is done");
+    CLIENT_DONE ("client is done");                                 // client is done job signal
 
     private final String status;
 
