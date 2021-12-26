@@ -126,7 +126,7 @@ public class Master
 
             // create and start a MasterSendingToSlave Thread
             MasterSendingThreadToSlave sendingToSlave = new MasterSendingThreadToSlave(slaveA, slaveB, timeTrackerA,
-                    timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK, done);
+                    timeTrackerB, timeTracker_LOCK, unfinishedJobs, unfinishedJob_LOCK);
 
             sendingToSlave.start();
 

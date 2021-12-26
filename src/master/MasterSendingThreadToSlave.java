@@ -24,13 +24,10 @@ public class MasterSendingThreadToSlave extends Thread
     private final ArrayList<Job> unfinishedJobs;
     private final Object unfinishedJobs_LOCK;
 
-    // Done Object - the signal to exit the Thread
-    private final Done done;
-
     public MasterSendingThreadToSlave(Socket slaveSocketA, Socket slaveSocketB,
                                       TimeTrackerForSlave timeTrackerA, TimeTrackerForSlave timeTrackerB,
                                       Object timeTrackerForSlave_lock,
-                                      ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK, Done done)
+                                      ArrayList<Job> unfinishedJobs, Object unfinishedJobs_LOCK)
     {
         slaveA = slaveSocketA;
         slaveB = slaveSocketB;
@@ -39,7 +36,6 @@ public class MasterSendingThreadToSlave extends Thread
         this.timeTrackerForSlave_LOCK = timeTrackerForSlave_lock;
         this.unfinishedJobs = unfinishedJobs;
         this.unfinishedJobs_LOCK = unfinishedJobs_LOCK;
-        this.done = done;
     }
 
     @Override
@@ -48,7 +44,7 @@ public class MasterSendingThreadToSlave extends Thread
         try (ObjectOutputStream objectOutputStreamSlaveA = new ObjectOutputStream(slaveA.getOutputStream());
              ObjectOutputStream objectOutputStreamSlaveB = new ObjectOutputStream(slaveB.getOutputStream()))
         {
-            while (!done.isFinished())
+            while (true)
             {
                 // check if there is a job to send
                 Job currJob;

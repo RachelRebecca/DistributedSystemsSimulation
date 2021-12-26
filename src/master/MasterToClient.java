@@ -37,6 +37,7 @@ public class MasterToClient extends Thread
     private final Done done;
     private final Object done_LOCK;
 
+    // boolean flag to continue while loop
     private boolean continueLoop;
 
     public MasterToClient(ArrayList<Socket> clientSockets, Object clientSockets_LOCK,
@@ -84,7 +85,7 @@ public class MasterToClient extends Thread
                 mrc.start();
 
                 MasterSendingThreadToClient msc = new MasterSendingThreadToClient(
-                        clientSocket, done, finishedJobs, finishedJob_LOCK, clientNumber);
+                        clientSocket, finishedJobs, finishedJob_LOCK, clientNumber);
                 masterSendingThreadToClient.add(msc);
                 msc.start();
 

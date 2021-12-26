@@ -16,9 +16,6 @@ public class MasterSendingThreadToClient extends Thread
     // Socket connecting Client to Master
     private final Socket clientSocket;
 
-    // Done Object - the signal to exit the thread
-    private final Done done;
-
     // list of finished jobs to send to the client (shared memory)
     private final ArrayList<Job> finishedJobs;
     private final Object finishedJobs_LOCK;
@@ -26,11 +23,10 @@ public class MasterSendingThreadToClient extends Thread
     // the ID of the Client which the Master is sending jobs to using this Thread
     private final int clientNumber;
 
-    public MasterSendingThreadToClient(Socket clientSocket, Done done, ArrayList<Job> finishedJobs,
+    public MasterSendingThreadToClient(Socket clientSocket, ArrayList<Job> finishedJobs,
                                        Object finishedJobs_LOCK, int clientNumber)
     {
         this.clientSocket = clientSocket;
-        this.done = done;
         this.finishedJobs = finishedJobs;
         this.finishedJobs_LOCK = finishedJobs_LOCK;
         this.clientNumber = clientNumber;
@@ -41,7 +37,7 @@ public class MasterSendingThreadToClient extends Thread
     {
        try (ObjectOutputStream requestWriter = new ObjectOutputStream(clientSocket.getOutputStream()))
        {
-           while (!done.isFinished())
+           while (true)
            {
                Job currJob = null;
 
