@@ -2,7 +2,7 @@ package resources;
 
 public class Done
 {
-    // boolean flag to determine if a program and threads should terminate
+    // boolean flag to determine if a program and Threads should terminate
     boolean finished;
 
     public Done()

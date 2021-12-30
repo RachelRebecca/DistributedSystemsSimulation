@@ -9,11 +9,11 @@ import java.io.Serializable;
  */
 public class Job implements Serializable
 {
-    private int client;
-    private JobTypes type;
-    private int id;
-    private JobStatuses status;
-    private SlaveTypes slaveType;
+    private int client;                     // Client ID of the Client that sent the job
+    private JobTypes type;                  // Job Type (A, B, or null)
+    private int id;                         // Job ID
+    private JobStatuses status;             // Job status (where job is at each stage of its journey)
+    private SlaveTypes slaveType;           // Slave Type (A, B, or null) of Slave assigned to job
 
     public Job (JobTypes jobType, int Id, JobStatuses jobStatus)
     {

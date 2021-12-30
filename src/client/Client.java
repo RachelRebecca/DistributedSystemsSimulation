@@ -150,9 +150,9 @@ public class Client
     }
 
     /**
-     * Check if arg is an integer
+     * Check if arg is a valid port number
      * @param arg (String)
-     * @return boolean if arg can be parsed as an integer
+     * @return boolean if arg is valid client port number
      */
     private static boolean isValidPort(String arg)
     {
