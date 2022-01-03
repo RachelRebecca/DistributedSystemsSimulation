@@ -124,7 +124,7 @@ public class Client
             }
             while (size > 0);
 
-            // set Client Done flag to true (i.e. ready to end threads)
+            // set Client Done flag to true (i.e. ready to end Threads)
             synchronized (done_LOCK)
             {
                 done.setFinished(true);
